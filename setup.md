@@ -34,9 +34,9 @@
 
 
 
-## Set up logging
+## Set up recording
 
-### 1. Sound recording
+### 1. Audio
 
 
 
@@ -45,5 +45,9 @@
 
 
 ### 3. Water pressure
+
+
+
+## Test & run
 
 
