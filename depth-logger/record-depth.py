@@ -6,6 +6,12 @@ import busio
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from time import sleep, strftime
+from rpi_lcd import LCD
+
+try:
+	lcd = LCD(bus=2)
+except OSError:
+	lcd = None
 
 # Create the I2C bus
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -25,7 +31,7 @@ depthS = AnalogIn(ads, ADS.P1)
 
 # Open the file to write down the results
 timestr = time.strftime("%Y-%m-%dT%H-%M-%S")
-filename = "/home/shared/logger-raspi-setup/data/depth/" + timestr + "_depth_data.csv"
+filename = "/home/shared/hydrophonitor/data/depth/" + timestr + "_depth_data.csv"
 
 #depthM = ((depthS.voltage * 31.848) - 22.93)
 
@@ -47,6 +53,9 @@ with open(filename, "w", 1) as f:
 
         print((str(voltage) + " V  ") + (str(depthM) + " m ") + (str(roundvolts) + " V  ") + (str(rounddepth) + " m"))
 
+        if lcd:
+            lcd.clear()
+            lcd.text((str(roundvolts) + " V  ") + (str(rounddepth) + " m"), 1)
         f.write(time.strftime("%Y-%m-%dT%H:%M:%S") + ",")
         f.write(str(roundvolts) + "," + str(rounddepth) + "\n")
         
