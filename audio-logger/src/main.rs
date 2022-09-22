@@ -4,6 +4,8 @@
 mod cli;
 mod recorder;
 mod print_configs;
+mod getters;
+mod input_handling;
 
 use clap::Parser;
 use recorder::{batch_recording, contiguous_recording};
