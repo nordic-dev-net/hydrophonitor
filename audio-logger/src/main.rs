@@ -17,7 +17,7 @@ use std::sync::{Condvar, atomic::{AtomicBool, Ordering}};
 const DEFAULT_SAMPLE_RATE: u32 = 44100;
 const DEFAULT_CHANNEL_COUNT: u16 = 1;
 const DEFAULT_BUFFER_SIZE: u32 = 1024;
-const ALLOWED_SAMPLE_RATES: &[u32] = &[44100, 48000, 88200, 96000, 176400, 192000];
+const ALLOWED_SAMPLE_RATES: [u32; 6] = [44100, 48000, 88200, 96000, 176400, 192000];
 const MAX_CHANNEL_COUNT: u16 = 2;
 const MIN_BUFFER_SIZE: usize = 64;
 const MAX_BUFFER_SIZE: usize = 8192;

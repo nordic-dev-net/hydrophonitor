@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use crate::getters::*;
 use crate::input_handling::*;
-
+use anyhow::Error;
 type WriteHandle = Arc<Mutex<Option<hound::WavWriter<BufWriter<File>>>>>;
 
 pub struct Recorder {
@@ -42,7 +42,7 @@ impl Recorder {
 		sample_rate: u32,
 		channels: u16,
 		buffer_size: u32,
-	) -> Result<Self, anyhow::Error> {
+	) -> Result<Self, Error> {
 
 		// Create interrupt handles to be used by the stream or batch loop.
 		let interrupt_handles = InterruptHandles::new()?;
@@ -75,14 +75,14 @@ impl Recorder {
 		})
 	}
 
-	fn init_writer(&mut self) -> Result<(), anyhow::Error> {
-		let filename = get_filename(&self.name, &self.path)?;
+	fn init_writer(&mut self) -> Result<(), Error> {
+		let filename = get_filename(&self.name, &self.path);
 		self.current_file = filename.clone();
 		*self.writer.lock().unwrap() = Some(hound::WavWriter::create(filename, self.spec)?);
 		Ok(())
 	}
 
-	fn create_stream(&self) -> Result<Stream, anyhow::Error> {
+	fn create_stream(&self) -> Result<Stream, Error> {
 		let writer = self.writer.clone();
 		let config = self.user_config.clone();
 		let err_fn = |err| { eprintln!("An error occurred on stream: {}", err); };
@@ -111,7 +111,7 @@ impl Recorder {
 	///
 	/// Start a continuous recording. The recording will be stopped when the
 	/// user presses `Ctrl+C`.
-	pub fn record(&mut self) -> Result<(), anyhow::Error> {
+	pub fn record(&mut self) -> Result<(), Error> {
 		self.init_writer()?;
 		let stream = self.create_stream()?;
 		stream.play()?;
@@ -127,7 +127,7 @@ impl Recorder {
 	///
 	/// Record for a given number of seconds or until the user presses `Ctrl+C`.
 	/// Current batch is finished before stopping.
-	pub fn record_secs(&mut self, secs: u64) -> Result<(), anyhow::Error> {
+	pub fn record_secs(&mut self, secs: u64) -> Result<(), Error> {
 		self.init_writer()?;
 		let stream = self.create_stream()?;
 		stream.play()?;
@@ -161,14 +161,14 @@ where
     }
 }
 
-pub fn batch_recording(rec: &mut Recorder, secs: u64) -> Result<(), anyhow::Error> {
+pub fn batch_recording(rec: &mut Recorder, secs: u64) -> Result<(), Error> {
 	while rec.interrupt_handles.batch_is_running() {
 		rec.record_secs(secs)?;
 	}
 	Ok(())
 }
 
-pub fn contiguous_recording(rec: &mut Recorder) -> Result<(), anyhow::Error> {
+pub fn contiguous_recording(rec: &mut Recorder) -> Result<(), Error> {
 	rec.record()?;
 	Ok(())
 }
