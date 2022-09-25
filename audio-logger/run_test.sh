@@ -1,6 +1,6 @@
 #!/bin/bash
 
-target/release/audio-logger \
+target/release/audio rec \
 	--name test \
 	--output recordings/ \
 	--batch-recording 3 \

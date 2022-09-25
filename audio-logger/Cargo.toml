@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = {url = "https://github.com/clap-rs/clap", features = ["derive"]}
+clap = { url = "https://github.com/clap-rs/clap", features = ["derive"] }
 cpal= { version = "0.13.5", features = ["jack"] }
 anyhow = "1.0.61"
 hound = "3.4.0"
