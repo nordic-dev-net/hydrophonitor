@@ -1,8 +1,7 @@
 all:
 	cargo build --release
 
-test:
-	cargo build --release
+test: all
 	mkdir -p recordings
 	bash run_test.sh
 

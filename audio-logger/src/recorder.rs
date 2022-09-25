@@ -27,6 +27,7 @@ pub struct Recorder {
 	name: String,
 	path: PathBuf,
 	current_file: String,
+	max_seconds: Option<u64>,
 }
 
 /// # Recorder
@@ -50,10 +51,11 @@ impl Recorder {
 		sample_rate: u32,
 		channels: u16,
 		buffer_size: u32,
+		max_seconds: Option<u64>,
 	) -> Result<Self, Error> {
 
 		// Create interrupt handles to be used by the stream or batch loop.
-		let interrupt_handles = InterruptHandles::new()?;
+		let interrupt_handles = InterruptHandles::new(max_seconds)?;
 
 		// Select requested host.
 		let host = get_host(host)?;
@@ -80,13 +82,14 @@ impl Recorder {
 			name,
 			path,
 			current_file: "".to_string(),
+			max_seconds,
 		})
 	}
 
 	fn init_writer(&mut self) -> Result<(), Error> {
 		let filename = get_filename(&self.name, &self.path);
 		self.current_file = filename.clone();
-		*self.writer.lock().unwrap() = Some(hound::WavWriter::create(filename, self.spec)?);
+		self.writer = Arc::new(Mutex::new(Some(hound::WavWriter::create(filename, self.spec)?)));
 		Ok(())
 	}
 
@@ -141,15 +144,19 @@ impl Recorder {
 		stream.play()?;
 		println!("REC: {}", self.current_file);
 		let now = std::time::Instant::now();
-		loop {
-			std::thread::sleep(std::time::Duration::from_millis(500));
+		while self.interrupt_handles.batch_is_running() {
+			std::thread::sleep(std::time::Duration::from_millis(1));
 			if now.elapsed().as_secs() >= secs {
 				break;
 			}
 		}
 		drop(stream);
-		self.writer.lock().unwrap().take().unwrap().finalize()?;
-		println!("STOP: {}", self.current_file);
+		let writer = self.writer.clone();
+		let current_file = self.current_file.clone();
+		std::thread::spawn(move || {
+			writer.lock().unwrap().take().unwrap().finalize().unwrap();
+			println!("STOP: {}", current_file);
+		});
 		Ok(())
 	}
 }
@@ -170,7 +177,16 @@ where
 }
 
 fn batch_recording(rec: &mut Recorder, secs: u64) -> Result<(), Error> {
+	let now = std::time::Instant::now();
 	while rec.interrupt_handles.batch_is_running() {
+		match rec.max_seconds {
+			Some(max_secs) => {
+				if now.elapsed().as_secs() >= max_secs {
+					break;
+				}
+			}
+			None => {}
+		}
 		rec.record_secs(secs)?;
 	}
 	Ok(())
@@ -181,6 +197,31 @@ fn continuous_recording(rec: &mut Recorder) -> Result<(), Error> {
 	Ok(())
 }
 
+#[cfg(target_os = "linux")]
+fn match_host_platform(host: Hosts) -> Result<cpal::HostId, Error> {
+	match host {
+		Hosts::Alsa => Ok(cpal::HostId::Alsa),
+		Hosts::Jack => Ok(cpal::HostId::Jack),
+		_ => Err(anyhow!("Host not supported on Linux.")),
+	}
+}
+
+#[cfg(target_os = "macos")]
+fn match_host_platform(host: Hosts) -> Result<cpal::HostId, Error> {
+	match host {
+		Hosts::CoreAudio => Ok(cpal::HostId::CoreAudio),
+		_ => Err(anyhow!("Host not supported on macOS.")),
+	}
+}
+
+#[cfg(target_os = "windows")]
+fn match_host_platform(host: Hosts) -> Result<cpal::HostId, Error> {
+	match host {
+		Hosts::Asio => Ok(cpal::HostId::Asio),
+		_ => Err(anyhow!("Host not supported on Windows.")),
+	}
+}
+
 pub fn record(args: &Rec) -> Result<(), Error> {
 	let mut recorder = Recorder::init(
 		args.name.clone(),
@@ -188,13 +229,11 @@ pub fn record(args: &Rec) -> Result<(), Error> {
 			Some(path) => path,
 			None => Path::new("./").to_path_buf(),
 		},
-		match args.host {
-			Hosts::Alsa => cpal::HostId::Alsa,
-			Hosts::Jack => cpal::HostId::Jack,
-		},
+		match_host_platform(args.host)?,
 		args.sample_rate.unwrap_or(DEFAULT_SAMPLE_RATE),
 		args.channels.unwrap_or(DEFAULT_CHANNEL_COUNT),
 		args.buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE),
+		args.max_seconds,
 	)?;
 
 	match args.batch_recording {

@@ -19,10 +19,11 @@ type BatchInterrupt= Arc<AtomicBool>;
 pub struct InterruptHandles {
 	batch_interrupt: BatchInterrupt,
 	stream_interrupt: StreamInterrupt,
+	max_seconds: Option<u64>,
 }
 
 impl InterruptHandles {
-	pub fn new() -> Result<Self, anyhow::Error> {
+	pub fn new(max_seconds: Option<u64>) -> Result<Self, anyhow::Error> {
 		let stream_interrupt = Arc::new((Mutex::new(false), Condvar::new()));
 		let stream_interrupt_cloned = stream_interrupt.clone();
 
@@ -42,13 +43,23 @@ impl InterruptHandles {
 		Ok(Self {
 			batch_interrupt,
 			stream_interrupt,
+			max_seconds,
 		})
 	}
 
 	pub fn stream_wait(&self) {
 		let &(ref lock, ref cvar) = &*self.stream_interrupt;
 		let mut started = lock.lock().unwrap();
+		let now = std::time::Instant::now();
 		while !*started {
+			match self.max_seconds {
+				Some(secs) => {
+					if now.elapsed().as_secs() >= secs {
+						break;
+					}
+				}
+				None => (),
+			}
 			started = cvar.wait(started).unwrap();
 		}
 	}

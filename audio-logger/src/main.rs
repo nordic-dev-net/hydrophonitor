@@ -16,8 +16,8 @@ use constants::*;
 use getters::*;
 use input_handling::*;
 use play::*;
+use anyhow::{Error, Result, anyhow};
 
-use anyhow::{Result, Error};
 use clap::Parser;
 
 fn main() -> Result<(), Error> {

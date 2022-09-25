@@ -4,6 +4,8 @@ use clap::{Parser, ValueEnum, Subcommand};
 pub enum Hosts {
 	Alsa,
 	Jack,
+	CoreAudio,
+	Asio,
 }
 
 #[derive(Subcommand)]
@@ -51,6 +53,10 @@ pub struct Rec {
 	/// (optional) Will record in [SECONDS] batches
 	#[clap(short, long, value_name = "SECONDS")]
 	pub batch_recording: Option<u64>,
+
+	/// (optional) Will record for a total of [SECONDS]
+	#[clap(short, long, value_name = "MAX_SECONDS")]
+	pub max_seconds: Option<u64>,
 
 	/// Host API to use
 	#[clap(value_enum)]

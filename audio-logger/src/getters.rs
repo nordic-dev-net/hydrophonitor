@@ -97,7 +97,7 @@ pub fn get_wav_spec(default_config: &SupportedStreamConfig, user_config: &Stream
 pub fn get_date_time_string() -> String {
 	let now: DateTime<Local> = Local::now();
 	format!(
-		"{}-{}-{}_{}:{}:{}",
+		"{}-{}-{}_{}:{}:{:02}",
 		now.year(), now.month(), now.day(),
 		now.hour(), now.minute(), now.second(),
 	)
