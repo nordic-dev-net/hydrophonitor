@@ -1,9 +1,10 @@
-test: all
-	bash run_test.sh
-
 all:
 	cargo build --release
+
+test:
+	cargo build --release
 	mkdir -p recordings
+	bash run_test.sh
 
 clean:
 	cargo clean
@@ -14,4 +15,4 @@ fclean: clean
 re: fclean
 	cargo build --release
 
-.PHONY: all clean re test
+.PHONY: all clean fclean re test

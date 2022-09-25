@@ -1,10 +1,18 @@
-use cpal::traits::{DeviceTrait, HostTrait};
-use cpal::*;
-use std::path::PathBuf;
-use hound::WavSpec;
-use chrono::prelude::*;
-use anyhow::{Error, anyhow};
 use super::*;
+use cpal::{
+	StreamConfig,
+	SupportedStreamConfig,
+	Device,
+	HostId,
+	Host,
+	SampleRate,
+	BufferSize,
+	traits::{DeviceTrait, HostTrait},
+};
+use hound::WavSpec;
+use std::path::PathBuf;
+use chrono::*;
+use anyhow::{Error, Result, anyhow};
 
 /// # Get Host
 ///
@@ -86,17 +94,20 @@ pub fn get_wav_spec(default_config: &SupportedStreamConfig, user_config: &Stream
 	})
 }
 
+pub fn get_date_time_string() -> String {
+	let now: DateTime<Local> = Local::now();
+	format!(
+		"{}-{}-{}_{}:{}:{}",
+		now.year(), now.month(), now.day(),
+		now.hour(), now.minute(), now.second(),
+	)
+}
 /// # Get Filename
 ///
 /// Get the filename for the current recording according to the given format,
 /// the current date and time, and the name prefix.
 pub fn get_filename(name: &str, path: &PathBuf) -> String {
-	let now: DateTime<Local> = Local::now();
-	let filename = format!(
-		"{}-{}-{}-{}-{}:{}:{}.wav",
-		name,
-		now.year(), now.month(), now.day(),
-		now.hour(), now.minute(), now.second(),
-	);
-	path.join(filename).to_str().unwrap().to_string()
+	let mut filename = path.clone();
+	filename.push(format!("{}_{}.wav", get_date_time_string(), name));
+	filename.to_str().unwrap().to_string()
 }

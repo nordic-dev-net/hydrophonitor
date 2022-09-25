@@ -1,12 +1,20 @@
-use cpal::traits::{DeviceTrait, StreamTrait};
-use cpal::*;
-use std::fs::File;
-use std::io::BufWriter;
-use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
-use crate::getters::*;
-use crate::input_handling::*;
+use super::*;
+use cpal::{
+	StreamConfig,
+	SupportedStreamConfig,
+	Device,
+	HostId,
+	Stream,
+	traits::{DeviceTrait, StreamTrait},
+};
+use std::{
+	fs::File,
+	io::BufWriter,
+	path::{PathBuf, Path},
+	sync::{Arc, Mutex},
+};
 use anyhow::Error;
+
 type WriteHandle = Arc<Mutex<Option<hound::WavWriter<BufWriter<File>>>>>;
 
 pub struct Recorder {
@@ -85,7 +93,7 @@ impl Recorder {
 	fn create_stream(&self) -> Result<Stream, Error> {
 		let writer = self.writer.clone();
 		let config = self.user_config.clone();
-		let err_fn = |err| { eprintln!("An error occurred on stream: {}", err); };
+		let err_fn = |err| { eprintln!("{}: An error occurred on stream: {}", get_date_time_string(), err); };
 
 		let stream = match self.default_config.sample_format() {
 			cpal::SampleFormat::F32 => self.device.build_input_stream(
@@ -161,14 +169,36 @@ where
     }
 }
 
-pub fn batch_recording(rec: &mut Recorder, secs: u64) -> Result<(), Error> {
+fn batch_recording(rec: &mut Recorder, secs: u64) -> Result<(), Error> {
 	while rec.interrupt_handles.batch_is_running() {
 		rec.record_secs(secs)?;
 	}
 	Ok(())
 }
 
-pub fn contiguous_recording(rec: &mut Recorder) -> Result<(), Error> {
+fn continuous_recording(rec: &mut Recorder) -> Result<(), Error> {
 	rec.record()?;
 	Ok(())
+}
+
+pub fn record(args: &Rec) -> Result<(), Error> {
+	let mut recorder = Recorder::init(
+		args.name.clone(),
+		match args.output.clone() {
+			Some(path) => path,
+			None => Path::new("./").to_path_buf(),
+		},
+		match args.host {
+			Hosts::Alsa => cpal::HostId::Alsa,
+			Hosts::Jack => cpal::HostId::Jack,
+		},
+		args.sample_rate.unwrap_or(DEFAULT_SAMPLE_RATE),
+		args.channels.unwrap_or(DEFAULT_CHANNEL_COUNT),
+		args.buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE),
+	)?;
+
+	match args.batch_recording {
+		Some(seconds) => batch_recording(&mut recorder, seconds),
+		None => continuous_recording(&mut recorder),
+	}
 }

@@ -1,5 +1,19 @@
 use cpal::traits::{DeviceTrait, HostTrait};
 
+// pub fn print_available_hosts() -> Result<(), anyhow::Error> {
+// 	let hosts = cpal::available_hosts();
+// 	println!("Available hosts:");
+// 	for host in hosts {
+// 		println!("  {}", host.name());
+// 	}
+// 	Ok(())
+// }
+
+// pub fn print_supported_hosts() {
+// 	println!("Supported hosts:");
+// 	println!("{:?}", cpal::ALL_HOSTS);
+// }
+
 pub fn print_configs() -> Result<(), anyhow::Error> {
     println!("Supported hosts:\n  {:?}", cpal::ALL_HOSTS);
     let available_hosts = cpal::available_hosts();

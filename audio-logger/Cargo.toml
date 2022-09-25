@@ -1,5 +1,5 @@
 [package]
-name = "audio-logger"
+name = "audio"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,6 +10,7 @@ anyhow = "1.0.61"
 hound = "3.4.0"
 chrono = "0.4.22"
 ctrlc = "3.2.3"
+rodio = "0.16.0"
 
 [target.'cfg(any(target_os = "linux", target_os = "dragonfly", target_os = "freebsd"))'.dependencies]
 alsa = "0.6"

@@ -1,0 +1,7 @@
+pub const DEFAULT_SAMPLE_RATE: u32 = 44100;
+pub const DEFAULT_CHANNEL_COUNT: u16 = 1;
+pub const DEFAULT_BUFFER_SIZE: u32 = 1024;
+pub const ALLOWED_SAMPLE_RATES: [u32; 6] = [44100, 48000, 88200, 96000, 176400, 192000];
+pub const MAX_CHANNEL_COUNT: u16 = 2;
+pub const MIN_BUFFER_SIZE: usize = 64;
+pub const MAX_BUFFER_SIZE: usize = 8192;

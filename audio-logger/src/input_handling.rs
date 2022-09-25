@@ -1,5 +1,10 @@
-use std::sync::{Arc, Mutex};
 use super::*;
+use std::sync::{
+	Arc,
+	Mutex,
+	Condvar,
+	atomic::{AtomicBool, Ordering}
+};
 
 type StreamInterrupt = Arc<(Mutex<bool>, Condvar)>;
 type BatchInterrupt= Arc<AtomicBool>;
