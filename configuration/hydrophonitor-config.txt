@@ -1,0 +1,13 @@
+# Audio
+
+SAMPLE_RATE=44100
+CHANNELS=2
+BITRATE=192k
+BATCH_RECORD_LENGTH=60
+
+# Output location
+
+TRY_MOUNT_SSD=true
+
+DEFAULT_BASE_DIR_PATH=/home/pi/recordings
+BASE_DIR_PATH=/home/pi/data
