@@ -1,9 +1,7 @@
 #!/bin/sh
 
-# Start jack server
+AUDIO_TARGET_LOCATION="/home/shared/hydrophonitor/audio-logger/target/release"
+AUDIO_TARGET_EXECUTABLE="audio"
+OPTIONS=""
 
-sh scripts/start-jack.sh
-
-# Start recording
-
-cd audio-logger && cargo run
+cd $AUDIO_TARGET_LOCATION && ./AUDIO_TARGET_EXECUTABLE $OPTIONS

@@ -1,3 +1,6 @@
 #!/usr/bin/sh
 
-python /home/shared/logger-raspi-setup/gps-logger/record-gps.py
+GPS_TARGET_LOCATION="/home/shared/hydrophonitor/gps-logger"
+OPTIONS=""
+
+cd $GPS_TARGET_LOCATION && python record-gps.py $OPTIONS
