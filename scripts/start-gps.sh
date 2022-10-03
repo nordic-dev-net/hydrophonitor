@@ -1,6 +1,9 @@
 #!/usr/bin/sh
 
-GPS_TARGET_LOCATION="/home/shared/hydrophonitor/gps-logger"
-OPTIONS=""
+# Export the configuration values
+. /home/pi/hydrophonitor/scripts/export-config-values.sh
 
-cd $GPS_TARGET_LOCATION && python record-gps.py $OPTIONS
+GPS_EXECUTABLE_LOCATION="/home/pi/hydrophonitor/gps-logger"
+OPTIONS="--output $OUTPUT_DIR --interval $GPS_INTERVAL"
+
+cd $GPS_EXECUTABLE_LOCATION && python record-gps.py $OPTIONS

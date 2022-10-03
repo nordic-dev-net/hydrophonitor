@@ -1,7 +1,18 @@
 #!/bin/sh
 
-AUDIO_TARGET_LOCATION="/home/shared/hydrophonitor/audio-logger/target/release"
-AUDIO_TARGET_EXECUTABLE="audio"
-OPTIONS=""
+# Export the configuration values
+. /home/pi/hydrophonitor/scripts/export-config-values.sh
 
-cd $AUDIO_TARGET_LOCATION && ./AUDIO_TARGET_EXECUTABLE $OPTIONS
+AUDIO_TARGET_LOCATION="/home/pi/hydrophonitor/audio-logger/target/release"
+AUDIO_TARGET_EXECUTABLE="audio"
+
+OPTIONS="rec \
+--name audio_data \
+--output $OUTPUT_DIR \
+--batch-recording $BATCH_RECORD_LENGTH \
+--sample-rate $SAMPLE_RATE \
+--channels $CHANNELS \
+--buffer-size 1024 \
+alsa"
+
+cd $AUDIO_TARGET_LOCATION && ./$AUDIO_TARGET_EXECUTABLE $OPTIONS
