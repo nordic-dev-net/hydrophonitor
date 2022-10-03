@@ -11,7 +11,6 @@ clean:
 fclean: clean
 	rm -rf recordings
 
-re: fclean
-	cargo build --release
+re: fclean all
 
 .PHONY: all clean fclean re test
