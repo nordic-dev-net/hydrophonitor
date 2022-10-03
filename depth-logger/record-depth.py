@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import board
 import time
 import busio
@@ -7,6 +8,12 @@ import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from time import sleep, strftime
 from rpi_lcd import LCD
+
+parser = argparse.ArgumentParser(description='GPS Logger')
+parser.add_argument('-o', '--output', help='Output file', required=True)
+parser.add_argument('-i', '--interval', help='Interval in seconds', required=False)
+
+args = parser.parse_args()
 
 try:
 	lcd = LCD(bus=2)
@@ -22,16 +29,15 @@ ads = ADS.ADS1015(i2c)
 # Create single-ended input on channel 0
 # tmp36 = AnalogIn(ads, ADS.P0)
 
-# Attempting to create a single-ended input on channel 1
+# Create a single-ended input on channel 1
 depthS = AnalogIn(ads, ADS.P1)
 
 # Subtract the offset from the sensor voltage
 # and convert chan.voltage * (1 degree C / 0.01V) = Degrees Celcius
 # temperatureC = (tmp36.voltage - 0.5) / 0.01
 
-# Open the file to write down the results
-timestr = time.strftime("%Y-%m-%dT%H-%M-%S")
-filename = "/home/shared/hydrophonitor/data/depth/" + timestr + "_depth_data.csv"
+# File to write down the results
+filename = args.output + time.strftime("%Y-%m-%dT%H-%M-%S") + "_depth_data.csv"
 
 #depthM = ((depthS.voltage * 31.848) - 22.93)
 
@@ -58,5 +64,8 @@ with open(filename, "w", 1) as f:
             lcd.text((str(roundvolts) + " V  ") + (str(rounddepth) + " m"), 1)
         f.write(time.strftime("%Y-%m-%dT%H:%M:%S") + ",")
         f.write(str(roundvolts) + "," + str(rounddepth) + "\n")
-        
-        time.sleep(3)
+
+        if args.interval:
+            time.sleep(int(args.interval))
+        else:
+            time.sleep(5)
