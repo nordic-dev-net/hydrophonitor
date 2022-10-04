@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -euo pipefail
-
 # Copy the files to /home/pi
 cd /home/pi
 cp -R /boot/hydrophonitor .
@@ -21,7 +19,7 @@ sh scripts/setup-pressure-depth.sh
 
 # Setup cron job to start the recordings at boot
 CRON_FILE=/etc/crontab
-echo "@reboot root /home/pi/hydrophonitor/scripts/start-all.sh" >> $CRON_FILE
+echo "@reboot root /home/pi/hydrophonitor/scripts/start-all.sh" | sudo tee -a $CRON_FILE
 
 # Reboot
 sudo reboot

@@ -10,7 +10,7 @@ parser.add_argument('-i', '--interval', help='Interval in seconds', required=Fal
 
 args = parser.parse_args()
 
-filename = args.output + time.strftime("%Y-%m-%dT%H-%M-%S") + "_GPS_data.csv"
+filename = args.output + "/" + time.strftime("%Y-%m-%dT%H-%M-%S") + "_GPS_data.csv"
 
 with open(filename, "w", 1) as f:
 	gpsd = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)

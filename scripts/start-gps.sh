@@ -6,4 +6,6 @@
 GPS_EXECUTABLE_LOCATION="/home/pi/hydrophonitor/gps-logger"
 OPTIONS="--output $OUTPUT_DIR --interval $GPS_INTERVAL"
 
+echo "cd $GPS_EXECUTABLE_LOCATION && python record-gps.py $OPTIONS"
+
 cd $GPS_EXECUTABLE_LOCATION && python record-gps.py $OPTIONS
