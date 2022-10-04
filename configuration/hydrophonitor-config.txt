@@ -15,7 +15,7 @@ DEPTH_INTERVAL=5
 
 # Output location
 
-TRY_MOUNT_SSD="true"
+TRY_MOUNT_SSD=true
 
 DEFAULT_BASE_DIR_PATH=/home/pi/recordings
 BASE_DIR_PATH=/home/pi/data
