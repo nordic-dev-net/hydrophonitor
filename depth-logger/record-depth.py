@@ -46,7 +46,7 @@ interval = int(args.interval) if args.interval else 5
 #bar = psi * 14.503773800722
 
 with open(filename, "w", 1) as f:
-    print(f"Writing pressure/depth output to {filename}, interval {interval} seconds")
+    print(f"Writing pressure/depth output to {filename}, interval {interval} seconds", flush=True)
     f.write("time and date, Voltage of depth sensor (V), Depth (m)\n")
 
     try:
@@ -57,7 +57,7 @@ with open(filename, "w", 1) as f:
             roundvolts = round(voltage, 3)
             # roundtemp = round(temperatureC, 2)
 
-            print((str(voltage) + " V  ") + (str(depthM) + " m ") + (str(roundvolts) + " V  ") + (str(rounddepth) + " m"))
+            print((str(voltage) + " V  ") + (str(depthM) + " m ") + (str(roundvolts) + " V  ") + (str(rounddepth) + " m"), flush=True)
 
             # if lcd:
             #     lcd.clear()
@@ -68,4 +68,4 @@ with open(filename, "w", 1) as f:
             time.sleep(interval)
 
     except (KeyboardInterrupt, SystemExit): # when you press ctrl+c
-        print("Exiting depth recording.")
+        print("Exiting depth recording.", flush=True)
