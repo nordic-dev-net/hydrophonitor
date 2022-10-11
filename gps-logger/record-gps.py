@@ -5,15 +5,19 @@ import time
 import argparse
 
 parser = argparse.ArgumentParser(description='GPS Logger')
-parser.add_argument('-o', '--output', help='Output file', required=True)
+parser.add_argument('-o', '--output', help='Output directory', required=True)
 parser.add_argument('-i', '--interval', help='Interval in seconds', required=False)
 
 args = parser.parse_args()
 
 filename = args.output + "/" + time.strftime("%Y-%m-%dT%H-%M-%S") + "_GPS_data.csv"
 
+interval = int(args.interval) if args.interval else 5
+
 with open(filename, "w", 1) as f:
 	gpsd = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)
+
+	print(f"Writing GPS output to {filename}, interval {interval} seconds")
 	f.write("GPStime utc,latitude,longitude,speed,sats in view\n")
 
 	try:
@@ -28,11 +32,7 @@ with open(filename, "w", 1) as f:
 
 				f.write(GPStime + "," + lat +"," + lon + "," + speed + "," + sats + "\n")
 
-				if args.interval:
-					time.sleep(int(args.interval))
-				else:
-					time.sleep(5)
+				time.sleep(interval)
 	
 	except (KeyboardInterrupt, SystemExit): # when you press ctrl+c
-		print("Done.\nExiting.")
-		f.close()
+		print("Exiting GPS recording.")
