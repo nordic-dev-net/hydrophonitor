@@ -1,9 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 # Export the configuration values
-. /home/pi/hydrophonitor/scripts/export-config-values.sh
+/home/pi/hydrophonitor/scripts/export-config-values.sh
 
-AUDIO_TARGET_PATH="/home/pi/hydrophonitor/audio-logger/target/release"
 AUDIO_TARGET_EXECUTABLE="audio"
 
 OPTIONS="rec \
@@ -15,6 +14,4 @@ OPTIONS="rec \
 --buffer-size 1024 \
 alsa"
 
-echo "cd $AUDIO_TARGET_PATH && ./$AUDIO_TARGET_EXECUTABLE $OPTIONS"
-
-cd $AUDIO_TARGET_PATH && ./$AUDIO_TARGET_EXECUTABLE $OPTIONS
+cd /home/pi/hydrophonitor/audio-logger/target/release && ./$AUDIO_TARGET_EXECUTABLE $OPTIONS

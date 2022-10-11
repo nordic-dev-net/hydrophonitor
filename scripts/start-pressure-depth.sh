@@ -1,10 +1,8 @@
-#!/usr/bin/sh
+#!/bin/bash
 
 # Export the configuration values
-. /home/pi/hydrophonitor/scripts/export-config-values.sh
-
-DEPTH_EXECUTABLE_PATH="/home/pi/hydrophonitor/depth-logger"
+/home/pi/hydrophonitor/scripts/export-config-values.sh
 
 OPTIONS="--output $OUTPUT_DIR --interval $DEPTH_INTERVAL"
 
-cd $DEPTH_EXECUTABLE_PATH && python record-depth.py $OPTIONS
+cd /home/pi/hydrophonitor/depth-logger && python record-depth.py $OPTIONS
