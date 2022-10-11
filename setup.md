@@ -62,17 +62,17 @@ After flashing the operating system to the SD card, it should show up as volume 
 
 To install all the needed components and to configure the Raspberry Pi to start the recordings when it is turned on, four steps are needed: copying the needed files to the SD card, putting the SD card in the Raspberry Pi and connecting to it on the command line over SSH, running an installer script on the command line, and finally letting it restart and verify that everything works as intended.
 
-#### 2.1 Copy files to the SD card
+#### 2.1 Copy files to the SD card, set configuration values
 
-Copy the entire `hydrophonitor` folder to the SD card (simple Ctrl+C and Ctrl+V works)
- 
+First, set the configuration values in the file hydrophonitor/configuration/hydrophonitor-config.txt. Then, copy the entire `hydrophonitor` folder to the SD card (simple Ctrl+C and Ctrl+V works). 
+
 #### 2.2 Plug the SD card in and connect to the Raspberry Pi over SSH
 
 Plug the SD card in the Raspberry Pi. Connect the audio card and the GPS receiver over USB to the Raspberry Pi, and plug the power cable. It will take some time for the Raspberry Pi to be ready to accept SSH connections.
 
 To figure out what IP address the Raspberry Pi has been assigned in the local network, a tool called `nmap` is needed.
 
-To check whether nmap is already installed on the system, open a terminal, run the following command (write it to the terminal and press Enter):
+To check whether nmap is already installed on the system, open a terminal and run the following command (write it to the terminal and press Enter):
 
 ```
 nmap --version
@@ -80,7 +80,7 @@ nmap --version
 
 If this prints out version information about nmap (e.g. Nmap version 7.93 ( https://nmap.org)), it is installed. Otherwise, installation instructions can be found here: https://nmap.org/download.html
 
-After installing, run the following command (it will ask for password, write it and press Enter) to find all devices connected to the local network:
+After installing, run the following command (it will ask for your user password, write it and press Enter) to find all devices connected to the local network:
 
 ```
 sudo nmap -sn 192.168.1.0/24
@@ -102,7 +102,7 @@ Now, this IP address can be used to connect to the Raspberry Pi over SSH on the 
 ssh pi@192.168.1.108
 ```
 
-When asked `Are you sure you want to continue connecting (yes/no/[fingerprint])?`, type `yes` and press Enter. Then, write the user's password when asked and press Enter.
+When asked `Are you sure you want to continue connecting (yes/no/[fingerprint])?`, type `yes` and press Enter. Then, write the Raspberry Pi user's password when asked and press Enter.
 
 After successfully connecting, your prompt should change to `<user>@raspberrypi:~` or something similar.
 
@@ -115,18 +115,22 @@ cd /boot/hydrophonitor/configuration
 ./setup-raspberry-pi.sh
 ```
 
+At the end of successful configuration, the script should print "### Setup ready, run 'sudo reboot' to apply all changes". Run the command and input the Raspberry Pi user's password if requested:
 
+```
+sudo reboot
+```
+
+This will restart the Raspberry Pi and apply the changes made in the setup. On startup, it should now start recording audio, GPS and depth data.
 
 ### 3. Configuration options
 
+todo
+
 ### 4. Mount SSD
 
-
-
-## Real time clock (RTC) module
-
-
+todo
 
 ## Test & run
 
-
+todo
