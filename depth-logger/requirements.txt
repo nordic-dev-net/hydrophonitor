@@ -1,0 +1,2 @@
+Adafruit-Blinka==8.5.0
+adafruit-circuitpython-ads1x15==2.2.21

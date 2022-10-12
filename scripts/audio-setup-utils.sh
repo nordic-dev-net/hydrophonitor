@@ -8,13 +8,9 @@ GOVERNOR="performance"
 MAX_SPEED="0"
 MIN_SPEED="0" " | sudo tee -a /etc/default/cpufrequtils
 
-# Install other useful tools
-sudo apt-get install htop git perl vim
-
 # Set CPU governor
 sudo sed -i 's/exit 0/sudo cpufreq-set -r -g performance/g' /etc/rc.local
 sudo echo "exit 0" | sudo tee -a /etc/rc.local
-
 
 # Set realtime priority and memlock
 sudo echo "

@@ -1,67 +1,49 @@
-use anyhow::anyhow;
-use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
-use cpal::*;
-use std::fs::File;
-use std::io::BufWriter;
-use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
-use chrono::prelude::*;
 use super::*;
+use cpal::{
+	StreamConfig,
+	SupportedStreamConfig,
+	Device,
+	HostId,
+	Stream,
+	traits::{DeviceTrait, StreamTrait},
+};
+use std::{
+	fs::File,
+	io::BufWriter,
+	path::{PathBuf, Path},
+	sync::{Arc, Mutex},
+};
+use anyhow::Error;
 
 type WriteHandle = Arc<Mutex<Option<hound::WavWriter<BufWriter<File>>>>>;
 
 pub struct Recorder {
 	writer: WriteHandle,
-	interrupt: InterruptHandles,
+	interrupt_handles: InterruptHandles,
 	default_config: SupportedStreamConfig,
 	user_config: StreamConfig,
 	device: Device,
-	filename: String,
-}
-
-/// # Stream User Config
-///
-/// Overrides certain fields of the default stream config with the user's config.
-///
-/// sample_rate: The user's sample rate if it is supported by the device, otherwise the default sample rate.
-/// channels: The user's number of channels if it is supported by the device, otherwise the default number of channels.
-/// buffer_size: The user's buffer size if it is supported by the device, otherwise the default buffer size.
-fn stream_user_config(sample_rate: u32, channels: u16, buffer_size: u32) -> Result<StreamConfig, anyhow::Error> {
-	if !ALLOWED_SAMPLE_RATES.contains(&sample_rate) {
-		return Err(anyhow!(
-			"Sample rate {} is not supported. Allowed sample rates: {:?}",
-			sample_rate,
-			ALLOWED_SAMPLE_RATES
-		));
-	}
-	if !(channels >= 1 && channels <= MAX_CHANNEL_COUNT) {
-		return Err(anyhow!(
-			"Channel count {} is not supported. Allowed channel counts: 1-{}",
-			channels,
-			MAX_CHANNEL_COUNT
-		));
-	}
-	if !(buffer_size >= MIN_BUFFER_SIZE as u32 && buffer_size <= MAX_BUFFER_SIZE as u32) {
-		return Err(anyhow!(
-			"Buffer size {} is not supported. Allowed buffer sizes: {}-{}",
-			buffer_size,
-			MIN_BUFFER_SIZE,
-			MAX_BUFFER_SIZE
-		));
-	}
-	Ok(StreamConfig {
-		channels,
-		sample_rate: SampleRate(sample_rate),
-		buffer_size: BufferSize::Fixed(buffer_size),
-	})
+	spec: hound::WavSpec,
+	name: String,
+	path: PathBuf,
+	current_file: String,
+	max_seconds: Option<u64>,
 }
 
 /// # Recorder
 ///
 /// The `Recorder` struct is used to record audio.
+///
+/// Use `init()` to initialize the recorder, `record()` to start a continuous recording,
+/// and `rec_secs()` to record for a given number of seconds. The Recorder does not
+/// need to be reinitialized after a recording is stopped. Calling `record()` or
+/// `rec_secs()` again will start a new recording with a new filename according to
+/// the time and date.
 impl Recorder {
 
-	/// Initializes a new recorder.
+	/// # Init
+	///
+	/// Initializes the recorder with the given host, sample rate, channel count, and buffer size.
 	pub fn init(
 		name: String,
 		path: PathBuf,
@@ -69,53 +51,52 @@ impl Recorder {
 		sample_rate: u32,
 		channels: u16,
 		buffer_size: u32,
-		interrupt: InterruptHandles,
-	) -> Result<Self, anyhow::Error> {
+		max_seconds: Option<u64>,
+	) -> Result<Self, Error> {
 
-		// Select requested host
-		let host = cpal::host_from_id(cpal::available_hosts()
-			.into_iter()
-			.find(|id| *id == host)
-			.ok_or(anyhow!("Requested host device not found"))?
-		)?;
+		// Create interrupt handles to be used by the stream or batch loop.
+		let interrupt_handles = InterruptHandles::new(max_seconds)?;
+
+		// Select requested host.
+		let host = get_host(host)?;
 
 		// Set up the input device and stream with the default input config.
-		let device = host.default_input_device()
-			.ok_or(anyhow!("No input device available. Try running `jackd -R -d alsa -d hw:0`",
-		))?;
+		let device = get_device(host)?;
 
-		let default_config = device.default_input_config()?;
-		let user_config = stream_user_config(sample_rate, channels, buffer_size)?;
+		// Get default config for the device.
+		let default_config = get_default_config(&device)?;
 
-		let spec = hound::WavSpec {
-			channels: user_config.channels as _,
-			sample_rate: user_config.sample_rate.0 as _,
-			bits_per_sample: (default_config.sample_format().sample_size() * 8) as _,
-			sample_format: match default_config.sample_format() {
-				cpal::SampleFormat::U16 => hound::SampleFormat::Int,
-				cpal::SampleFormat::I16 => hound::SampleFormat::Int,
-				cpal::SampleFormat::F32 => hound::SampleFormat::Float,
-			},
-		};
+		// Override certain fields of the default stream config with the user's config.
+		let user_config = get_user_config(sample_rate, channels, buffer_size)?;
 
-		// The WAV file we're recording to.
-		let ts: String = Utc::now().format(FMT_TIME).to_string();
-		let filename: String = path.to_str().unwrap().to_owned() + &name + "-" + &ts + ".wav";
+		// Get the hound WAV spec for the user's config.
+		let spec = get_wav_spec(&default_config, &user_config)?;
 
 		Ok(Self {
-			writer: Arc::new(Mutex::new(Some(hound::WavWriter::create(filename.clone(), spec)?))),
-			interrupt,
+			writer: Arc::new(Mutex::new(None)),
+			interrupt_handles,
 			default_config,
 			user_config,
 			device,
-			filename,
+			spec,
+			name,
+			path,
+			current_file: "".to_string(),
+			max_seconds,
 		})
 	}
 
-	fn create_stream(&self) -> Result<Stream, anyhow::Error> {
+	fn init_writer(&mut self) -> Result<(), Error> {
+		let filename = get_filename(&self.name, &self.path);
+		self.current_file = filename.clone();
+		self.writer = Arc::new(Mutex::new(Some(hound::WavWriter::create(filename, self.spec)?)));
+		Ok(())
+	}
+
+	fn create_stream(&self) -> Result<Stream, Error> {
 		let writer = self.writer.clone();
 		let config = self.user_config.clone();
-		let err_fn = |err| { eprintln!("an error occurred on stream: {}", err); };
+		let err_fn = |err| { eprintln!("{}: An error occurred on stream: {}", get_date_time_string(), err); };
 
 		let stream = match self.default_config.sample_format() {
 			cpal::SampleFormat::F32 => self.device.build_input_stream(
@@ -137,31 +118,45 @@ impl Recorder {
 		Ok(stream)
 	}
 
-	pub fn record(&self) -> Result<(), anyhow::Error> {
+	/// # Record
+	///
+	/// Start a continuous recording. The recording will be stopped when the
+	/// user presses `Ctrl+C`.
+	pub fn record(&mut self) -> Result<(), Error> {
+		self.init_writer()?;
 		let stream = self.create_stream()?;
 		stream.play()?;
-		println!("REC: {}", self.filename);
-		self.interrupt.stream_wait();
+		println!("REC: {}", self.current_file);
+		self.interrupt_handles.stream_wait();
 		drop(stream);
 		self.writer.lock().unwrap().take().unwrap().finalize()?;
-		println!("STOP: {}", self.filename);
+		println!("STOP: {}", self.current_file);
 		Ok(())
 	}
 
-	pub fn record_secs(&self, secs: u64) -> Result<(), anyhow::Error> {
+	/// # Record Seconds
+	///
+	/// Record for a given number of seconds or until the user presses `Ctrl+C`.
+	/// Current batch is finished before stopping.
+	pub fn record_secs(&mut self, secs: u64) -> Result<(), Error> {
+		self.init_writer()?;
 		let stream = self.create_stream()?;
 		stream.play()?;
-		println!("REC: {}", self.filename);
+		println!("REC: {}", self.current_file);
 		let now = std::time::Instant::now();
-		loop {
-			std::thread::sleep(std::time::Duration::from_millis(500));
+		while self.interrupt_handles.batch_is_running() {
+			std::thread::sleep(std::time::Duration::from_millis(1));
 			if now.elapsed().as_secs() >= secs {
 				break;
 			}
 		}
 		drop(stream);
-		self.writer.lock().unwrap().take().unwrap().finalize()?;
-		println!("STOP: {}", self.filename);
+		let writer = self.writer.clone();
+		let current_file = self.current_file.clone();
+		std::thread::spawn(move || {
+			writer.lock().unwrap().take().unwrap().finalize().unwrap();
+			println!("STOP: {}", current_file);
+		});
 		Ok(())
 	}
 }
@@ -181,44 +176,68 @@ where
     }
 }
 
-pub fn batch_recording(args: &Args, secs: u64, interrupt_handles: InterruptHandles) -> Result<(), anyhow::Error> {
-	while interrupt_handles.batch_is_running() {
-		let recorder = recorder::Recorder::init(
-			args.name.clone(),
-			match args.output.clone() {
-				Some(path) => path,
-				None => Path::new("./").to_path_buf(),
-			},
-			match args.host {
-				Hosts::Alsa => cpal::HostId::Alsa,
-				Hosts::Jack => cpal::HostId::Jack,
-			},
-			args.sample_rate.unwrap_or(DEFAULT_SAMPLE_RATE),
-			args.channels.unwrap_or(DEFAULT_CHANNEL_COUNT),
-			args.buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE),
-			interrupt_handles.clone(),
-		)?;
-		recorder.record_secs(secs)?;
+fn batch_recording(rec: &mut Recorder, secs: u64) -> Result<(), Error> {
+	let now = std::time::Instant::now();
+	while rec.interrupt_handles.batch_is_running() {
+		match rec.max_seconds {
+			Some(max_secs) => {
+				if now.elapsed().as_secs() >= max_secs {
+					break;
+				}
+			}
+			None => {}
+		}
+		rec.record_secs(secs)?;
 	}
 	Ok(())
 }
 
-pub fn contiguous_recording(args: &Args, interrupt_handles: InterruptHandles) -> Result<(), anyhow::Error> {
-	let recorder = recorder::Recorder::init(
+fn continuous_recording(rec: &mut Recorder) -> Result<(), Error> {
+	rec.record()?;
+	Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn match_host_platform(host: Hosts) -> Result<cpal::HostId, Error> {
+	match host {
+		Hosts::Alsa => Ok(cpal::HostId::Alsa),
+		Hosts::Jack => Ok(cpal::HostId::Jack),
+		_ => Err(anyhow!("Host not supported on Linux.")),
+	}
+}
+
+#[cfg(target_os = "macos")]
+fn match_host_platform(host: Hosts) -> Result<cpal::HostId, Error> {
+	match host {
+		Hosts::CoreAudio => Ok(cpal::HostId::CoreAudio),
+		_ => Err(anyhow!("Host not supported on macOS.")),
+	}
+}
+
+#[cfg(target_os = "windows")]
+fn match_host_platform(host: Hosts) -> Result<cpal::HostId, Error> {
+	match host {
+		Hosts::Asio => Ok(cpal::HostId::Asio),
+		_ => Err(anyhow!("Host not supported on Windows.")),
+	}
+}
+
+pub fn record(args: &Rec) -> Result<(), Error> {
+	let mut recorder = Recorder::init(
 		args.name.clone(),
 		match args.output.clone() {
 			Some(path) => path,
 			None => Path::new("./").to_path_buf(),
 		},
-		match args.host {
-			Hosts::Alsa => cpal::HostId::Alsa,
-			Hosts::Jack => cpal::HostId::Jack,
-		},
+		match_host_platform(args.host)?,
 		args.sample_rate.unwrap_or(DEFAULT_SAMPLE_RATE),
 		args.channels.unwrap_or(DEFAULT_CHANNEL_COUNT),
 		args.buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE),
-		interrupt_handles.clone(),
+		args.max_seconds,
 	)?;
-	recorder.record()?;
-	Ok(())
+
+	match args.batch_recording {
+		Some(seconds) => batch_recording(&mut recorder, seconds),
+		None => continuous_recording(&mut recorder),
+	}
 }

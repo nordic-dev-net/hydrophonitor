@@ -1,9 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
-# Start jack server
+# Export the configuration values
+/home/pi/hydrophonitor/scripts/export-config-values.sh
 
-sh scripts/start-jack.sh
+AUDIO_TARGET_EXECUTABLE="audio"
 
-# Start recording
+OPTIONS="rec \
+--name audio_data \
+--output $OUTPUT_DIR/audio \
+--batch-recording $BATCH_RECORD_LENGTH \
+--sample-rate $SAMPLE_RATE \
+--channels $CHANNELS \
+--buffer-size 1024 \
+alsa"
 
-cd audio-logger && cargo run
+cd /home/pi/hydrophonitor/audio-logger/target/release && ./$AUDIO_TARGET_EXECUTABLE $OPTIONS
