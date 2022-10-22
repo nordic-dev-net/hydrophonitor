@@ -11,6 +11,7 @@
   - Pressure sensor
   - Adafruit ADS1015 ADC
   - breadboard, resistors, jumper wires, 12V battery
+- RTC module (DS3231)
 
 
 ## Raspberry OS basic setup
@@ -41,8 +42,8 @@ Then the following steps:
 If you do not use the Raspberry Pi Imager to set up the SD card, the following steps are required:
 
 1. Download the 32-bit / 64-bit Rasbperry Pi OS Lite from here: https://www.raspberrypi.com/software/operating-systems/
-2. Flash the image to the SD card with the utility of your choice (options for Mac, Linux, Windows?)
-3. Fill in required details in the configuration files in configuration folder and copy them to the boot folder on the SD card (this is the folder that should open when you open the SD card volume on your computer):
+2. Flash the image to the SD card with the utility of your choice (options here for Mac, Linux, Windows?)
+3. Fill in required details in the configuration files in `hydrophonitor/pi-config` folder and copy them to the `boot` folder on the SD card (this is the folder that should open when you open the SD card volume on your computer):
 	- ssh.txt: this enables ssh on the Raspberry Pi, no need to edit the file (it's empty, the existence of the file in the boot folder is enough)
 	- userconf.txt: creates a user
     	- replace <username> with the username of choice (e.g. pi)
@@ -58,13 +59,13 @@ If you do not use the Raspberry Pi Imager to set up the SD card, the following s
 
 ### 2. Setting up the recording programs on the Raspberry Pi
 
-After flashing the operating system to the SD card, it should show up as volume called "boot".
+After flashing the operating system to the SD card, it should show up as volume called `boot`.
 
 To install all the needed components and to configure the Raspberry Pi to start the recordings when it is turned on, four steps are needed: copying the needed files to the SD card, putting the SD card in the Raspberry Pi and connecting to it on the command line over SSH, running an installer script on the command line, and finally letting it restart and verify that everything works as intended.
 
 #### 2.1 Copy files to the SD card, set configuration values
 
-First, set the configuration values in the file hydrophonitor/configuration/hydrophonitor-config.txt. Then, copy the entire `hydrophonitor` folder to the SD card (simple Ctrl+C and Ctrl+V works). 
+First, set the configuration values in the file `hydrophonitor/hydrophonitor-config.txt`. Then, copy the entire `hydrophonitor` folder to the SD card (simple Ctrl+C and Ctrl+V works). 
 
 #### 2.2 Plug the SD card in and connect to the Raspberry Pi over SSH
 
@@ -129,19 +130,19 @@ There are two scripts that configure the Raspberry Pi to read its system time fr
 
 The first part enables the i2c interface (bus 3 with SDA at GPIO pin 23 and SCL at GPIO pin 24) and loads the needed hardware modules at boot. After that, a reboot is needed to enable the hardware interface. The second part updates the hardware clock module time and configures the Raspberry Pi to set the hardware clock time as the system time on startup.
 
-Connect to the Raspberry Pi over ssh and navigate to the home directory:
+Connect to the Raspberry Pi over ssh, navigate to the home directory, and run the script with following commands:
 
 ```
-ssh pi@<IP>
+ssh <username>@<IP>
 cd $HOME
-sh hydrophonitor/scripts/setup-rtc-1.sh
+./hydrophonitor/scripts/setup-rtc-1.sh
 sudo reboot
 ```
 
 ```
-ssh pi@<IP>
+ssh <username>@<IP>
 cd $HOME
-sh hydrophonitor/scripts/setup-rtc-2.sh
+./hydrophonitor/scripts/setup-rtc-2.sh
 ```
 
 ### 4. Configuration options
