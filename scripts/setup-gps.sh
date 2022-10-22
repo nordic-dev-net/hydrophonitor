@@ -1,9 +1,10 @@
 #!/bin/sh
 
+set -ex
+
 echo "Setting up GPS recording"
 
-sudo apt-get update && sudo apt-get install -y \
-	gpsd gpsd-clients
+sudo apt-get update && sudo apt-get install -y gpsd gpsd-clients
 
 sudo pip install -r /home/pi/hydrophonitor/gps-logger/requirements.txt
 

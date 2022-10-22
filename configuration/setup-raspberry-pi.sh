@@ -27,7 +27,7 @@ echo
 echo "### Install some developer tools"
 echo
 
-sudo apt-get update && sudo apt-get install -y build-essential
+sudo apt-get update && sudo apt-get install -y build-essential python3-pip
 
 # Setup audio
 echo
