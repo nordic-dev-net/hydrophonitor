@@ -1,17 +1,8 @@
+install:
+	cd scripts && setup-raspberry-pi.sh
 
+build-audio:
+	cd audio-logger && cargo build --release
 
-configure:
-
-
-build:
-
-
-run-audio-recorder:
-
-
-run-gps-recorder:
-
-
-run-depth-recorder:
-
-
+start-all:
+	cd scripts && start-all.sh
