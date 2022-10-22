@@ -15,16 +15,13 @@ exit 0
 EOF
 
 # Set system time to Internet time
-
 echo "Restarting systmd-timesyncd to update system time"
-
 sudo systemctl restart systemd-timesyncd
 
 echo "System time now:"
 date
 
 # Write system time to the RTC module
-
 echo "Hardware clock time now:"
 sudo hwclock -r
 
