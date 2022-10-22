@@ -34,6 +34,6 @@ with open(filename, "w", 1) as f:
 			print("Exiting GPS recording.", flush=True)
 			break
 		except Exception as e:
-			print(f"GPS error: {e}", flush=True)
+			print(f"GPS error: {e}, trying again...", flush=True)
 		
 		time.sleep(interval)
