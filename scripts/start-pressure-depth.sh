@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Export the configuration values
 /home/pi/hydrophonitor/scripts/export-config-values.sh
 

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ex
+
 echo "Setting up depth recording"
 
 # Enable i2c bus on Raspberry Pi

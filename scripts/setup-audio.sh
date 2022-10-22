@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 echo "Setting up audio recording"
 
 # Install packages
