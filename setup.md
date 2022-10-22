@@ -123,11 +123,32 @@ sudo reboot
 
 This will restart the Raspberry Pi and apply the changes made in the setup. On startup, it should now start recording audio, GPS and depth data.
 
-### 3. Configuration options
+### 3. Set up the real time clock module
+
+There are two scripts that configure the Raspberry Pi to read its system time from the RTC module.
+
+The first part enables the i2c interface (bus 3 with SDA at GPIO pin 23 and SCL at GPIO pin 24) and loads the needed hardware modules at boot. After that, a reboot is needed to enable the hardware interface. The second part updates the hardware clock module time and configures the Raspberry Pi to set the hardware clock time as the system time on startup.
+
+Connect to the Raspberry Pi over ssh and navigate to the home directory:
+
+```
+ssh pi@<IP>
+cd $HOME
+sh hydrophonitor/scripts/setup-rtc-1.sh
+sudo reboot
+```
+
+```
+ssh pi@<IP>
+cd $HOME
+sh hydrophonitor/scripts/setup-rtc-2.sh
+```
+
+### 4. Configuration options
 
 todo
 
-### 4. Mount SSD
+### 5. Mount SSD
 
 todo
 
