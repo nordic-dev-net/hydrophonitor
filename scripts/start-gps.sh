@@ -3,8 +3,9 @@
 set -x
 
 # Export the configuration values
-/home/pi/hydrophonitor/scripts/export-config-values.sh
+SCRIPT_PATH=/home/pi/hydrophonitor/scripts
+$SCRIPT_PATH/export-config-values.sh
 
 OPTIONS="--output $OUTPUT_DIR --interval $GPS_INTERVAL"
 
-cd /home/pi/hydrophonitor/gps-logger && python record-gps.py $OPTIONS
+cd $HOME_PATH/hydrophonitor/gps-logger && python record-gps.py $OPTIONS

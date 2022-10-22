@@ -9,7 +9,7 @@ SCRIPT_PATH=/home/pi/hydrophonitor/scripts
 $SCRIPT_PATH/export-config-values.sh
 
 # Create output directory
-OUTPUT_DIR=$BASE_DIR_PATH/$(date +"%Y-%m-%d_%H-%M-%S_output")
+OUTPUT_DIR=$OUTPUT_PATH/$(date +"%Y-%m-%d_%H-%M-%S_output")
 echo "Create output directory $OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"/audio
 

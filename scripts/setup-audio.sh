@@ -27,4 +27,4 @@ ctl.!default {
 }
 EOF
 
-cd hydrophonitor/audio-logger && cargo build --release
+cd $HOME/hydrophonitor/audio-logger && cargo build --release

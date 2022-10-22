@@ -17,5 +17,6 @@ DEPTH_INTERVAL=5
 
 TRY_MOUNT_SSD=true
 
-DEFAULT_BASE_DIR_PATH=/home/pi/recordings
-BASE_DIR_PATH=/home/pi/data
+HOME_PATH=/home/pi
+DEFAULT_OUTPUT_PATH=$HOME_PATH/recordings
+OUTPUT_PATH=$HOME_PATH/data
