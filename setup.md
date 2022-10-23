@@ -112,7 +112,7 @@ After successfully connecting, your prompt should change to `<user>@raspberrypi:
 After establishing the SSH connection to the Raspberry Pi, change the current directory to the location of the installer script and run it:
 
 ```
-cd /boot/hydrophonitor/configuration
+cd /boot/hydrophonitor/scripts
 ./setup-raspberry-pi.sh
 ```
 
