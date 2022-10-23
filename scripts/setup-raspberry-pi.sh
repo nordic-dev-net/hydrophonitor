@@ -10,7 +10,7 @@ echo "### Update file paths in config and start script files"
 echo
 
 # Update hydrophonitor-config.txt HOME_PATH to the current user's home
-sudo sed -i "s|^HOME_PATH=.*$|HOME_PATH=$HOME|" $BOOT_DIR_PATH/hydrophonitor_config.txt
+sudo sed -i "s|^HOME_PATH=.*$|HOME_PATH=$HOME|" $BOOT_DIR_PATH/hydrophonitor-config.txt
 
 # Update script path in start scripts to the current user's home
 sudo sed -i "s|^SCRIPT_PATH=.*$|SCRIPT_PATH=$HOME/hydrophonitor/scripts|" $BOOT_DIR_PATH/scripts/start-all.sh

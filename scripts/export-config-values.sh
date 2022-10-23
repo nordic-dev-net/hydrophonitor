@@ -6,4 +6,10 @@ else
 	CONFIG_FILE=/boot/hydrophonitor/hydrophonitor-config.txt
 fi
 
-export $(grep -v '^#' $CONFIG_FILE | tr -d '[:space:]' | xargs -d '\n')
+# Select non-comment lines in CONFIG_FILE, clean horizontal whitespace
+args=$(grep -v '^#' $CONFIG_FILE | tr -d '[:blank:]' | tr '\n' ' ')
+
+for arg in $args; do
+	echo "export $arg"
+	export "${arg?}"
+done

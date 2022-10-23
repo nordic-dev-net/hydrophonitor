@@ -4,7 +4,7 @@ set -x
 
 # Export the configuration values
 SCRIPT_PATH=/home/pi/hydrophonitor/scripts
-$SCRIPT_PATH/export-config-values.sh
+. $SCRIPT_PATH/export-config-values.sh
 
 AUDIO_TARGET_EXECUTABLE="audio"
 

@@ -6,7 +6,7 @@ set -x
 SCRIPT_PATH=/home/pi/hydrophonitor/scripts
 
 # Export the configuration values
-$SCRIPT_PATH/export-config-values.sh
+. $SCRIPT_PATH/export-config-values.sh
 
 # Create output directory
 OUTPUT_DIR=$OUTPUT_PATH/$(date +"%Y-%m-%d_%H-%M-%S_output")
