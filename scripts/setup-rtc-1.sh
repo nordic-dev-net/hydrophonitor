@@ -11,7 +11,7 @@ dtoverlay=i2c-rtc,ds3231
 EOF
 
 # Disable fake-hwclock
-sudo apt-get remove fake-hwclock
+sudo apt-get remove -y fake-hwclock
 sudo update-rc.d -f fake-hwclock remove
 sudo systemctl disable fake-hwclock
 

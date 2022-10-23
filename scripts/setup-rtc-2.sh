@@ -23,10 +23,10 @@ date
 
 # Write system time to the RTC module
 echo "Hardware clock time now:"
-sudo hwclock -r
+sudo hwclock -r --verbose
 
 echo "Writing system time to hardware clock"
-sudo hwclock -w
+sudo hwclock -w --verbose
 
 echo "Hardware clock time now:"
-sudo hwclock -r
+sudo hwclock -r --verbose
