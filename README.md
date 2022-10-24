@@ -3,7 +3,7 @@
 A software package to record audio and related metadata from a configuration
 of hydrophones.
 
-For setup instructions, see `setup.md`.
+For setup instructions, see `docs/setup.md`.
 
 ## Overview
 
