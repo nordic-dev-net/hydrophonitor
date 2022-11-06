@@ -4,9 +4,11 @@ set -x
 
 echo "Setting up the real time clock module, part 1"
 
-# Enable i2c rtc on bus 3, set GPIO pins sda=23 and sdl=24
+# Enable i2c
+sudo raspi-config nonint do_i2c 0
+
+# Enable i2c rtc on the default i2c pins
 sudo cat << EOF | sudo tee -a /boot/config.txt
-dtoverlay=i2c-gpio,bus=3,i2c_gpio_delay_us=1,i2c_gpio_sda=23,i2c_gpio_scl=24
 dtoverlay=i2c-rtc,ds3231
 EOF
 
@@ -15,7 +17,7 @@ sudo apt-get remove -y fake-hwclock
 sudo update-rc.d -f fake-hwclock remove
 sudo systemctl disable fake-hwclock
 
-# Load modules at boot
+# Load needed modules at boot
 sudo cat << EOF | sudo tee -a /etc/modules
 i2c-bcm2708
 i2c-dev
