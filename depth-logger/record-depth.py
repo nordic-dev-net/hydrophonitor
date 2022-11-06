@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 
 import argparse
-import board
 import time
+import board
 import busio
 import adafruit_ads1x15.ads1015 as ADS
+from adafruit_extended_bus import ExtendedI2C as I2C
 from adafruit_ads1x15.analog_in import AnalogIn
 # from rpi_lcd import LCD
 
 parser = argparse.ArgumentParser(description='GPS Logger')
 parser.add_argument('-o', '--output', help='Output directory', required=True)
 parser.add_argument('-i', '--interval', help='Interval in seconds', required=False)
+parser.add_argument('-b', '--bus', help='Custom i2c bus to use', required=False)
 
 args = parser.parse_args()
 
@@ -20,7 +22,11 @@ args = parser.parse_args()
 #     lcd = None
 
 # Create the I2C bus
-i2c = busio.I2C(board.SCL, board.SDA)
+if args.bus:
+	i2c_bus = args.bus
+	i2c = I2C(i2c_bus)
+else:
+	i2c = busio.I2C(board.SCL, board.SDA)
 
 # Create the ADC object using the I2C bus
 ads = ADS.ADS1015(i2c)
