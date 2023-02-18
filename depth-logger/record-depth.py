@@ -7,7 +7,6 @@ import busio
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_extended_bus import ExtendedI2C as I2C
 from adafruit_ads1x15.analog_in import AnalogIn
-# from rpi_lcd import LCD
 
 parser = argparse.ArgumentParser(description='GPS Logger')
 parser.add_argument('-o', '--output', help='Output directory', required=True)
@@ -15,11 +14,6 @@ parser.add_argument('-i', '--interval', help='Interval in seconds', required=Fal
 parser.add_argument('-b', '--bus', help='Custom i2c bus to use', required=False)
 
 args = parser.parse_args()
-
-# try:
-#     lcd = LCD(bus=2)
-# except OSError:
-#     lcd = None
 
 # Create the I2C bus
 if args.bus:
@@ -64,10 +58,6 @@ with open(filename, "w", 1) as f:
             # roundtemp = round(temperatureC, 2)
 
             print((str(voltage) + " V  ") + (str(depthM) + " m ") + (str(roundvolts) + " V  ") + (str(rounddepth) + " m"), flush=True)
-
-            # if lcd:
-            #     lcd.clear()
-            #     lcd.text((str(roundvolts) + " V  ") + (str(rounddepth) + " m"), 1)
             
             f.write(time.strftime("%Y-%m-%dT%H:%M:%S") + "," + str(roundvolts) + "," + str(rounddepth) + "\n")
 

@@ -2,8 +2,12 @@
 
 set -ex
 
-DIR_PATH=$HOME
 BOOT_DIR_PATH=/boot/hydrophonitor
+
+# Output from commands within the curly braces is written
+# to a log file in $BOOT_DIR_PATH
+{
+DIR_PATH=$HOME
 
 echo
 echo "### Update file paths in config and start script files"
@@ -25,6 +29,7 @@ echo
 
 mkdir -p "$DIR_PATH"
 cd "$DIR_PATH"
+rm -rf hydrophonitor
 cp -R $BOOT_DIR_PATH/ .
 
 # Install some development tools
@@ -80,9 +85,12 @@ CRON_FILE=/etc/crontab
 CRON_COMMAND="@reboot root $DIR_PATH/hydrophonitor/scripts/start-all.sh 2>&1 > $BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-log.txt"
 
 # Append command to cron file only if it's not there yet
-sudo grep -qxF "$CRON_COMMAND" $CRON_FILE || echo "$CRON_COMMAND" | sudo tee -a $CRON_FILE
+if ! grep -q "$CRON_COMMAND" "$CRON_FILE"; then
+  echo "$CRON_COMMAND" | sudo tee -a "$CRON_FILE"
+fi
 
 # Reboot
 echo
 echo "### Setup ready, run 'sudo reboot' to apply all changes"
 echo
+} 2>&1 | sudo tee $BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-setup-log.txt
