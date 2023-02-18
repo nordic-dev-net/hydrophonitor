@@ -63,6 +63,13 @@ echo
 
 cd "$DIR_PATH" && ./hydrophonitor/scripts/setup-pressure-depth.sh
 
+# Setup shutdown button
+echo
+echo "### Setup shutdown button"
+echo
+
+cd "$DIR_PATH" && ./hydrophonitor/scripts/setup-shutdown-button.sh
+
 # Set up cron job to start the recordings at boot
 echo
 echo "### Set up a cron job to start the recordings at boot"
