@@ -3,11 +3,16 @@
 set -ex
 
 BOOT_DIR_PATH=/boot/hydrophonitor
+LOG_FILE=$BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-setup-log.txt
 
 # Output from commands within the curly braces is written
-# to a log file in $BOOT_DIR_PATH
+# to $LOG_FILE
 {
 DIR_PATH=$HOME
+
+echo
+echo "Starting setup, writing logs to $LOG_FILE"
+echo
 
 echo
 echo "### Update file paths in config and start script files"
@@ -80,9 +85,9 @@ echo
 echo "### Set up a cron job to start the recordings at boot"
 echo
 
-# USER=$(whoami)
 CRON_FILE=/etc/crontab
-CRON_COMMAND="@reboot root $DIR_PATH/hydrophonitor/scripts/start-all.sh 2>&1 > $BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-log.txt"
+CRON_LOG_FILE="$BOOT_DIR_PATH/\$(date +\"%Y-%m-%dT%H-%M-%S\")-cron-log.txt"
+CRON_COMMAND="@reboot root $DIR_PATH/hydrophonitor/scripts/start-all.sh 2>&1 > $CRON_LOG_FILE"
 
 # Append command to cron file only if it's not there yet
 if ! grep -q "$CRON_COMMAND" "$CRON_FILE"; then
@@ -93,4 +98,4 @@ fi
 echo
 echo "### Setup ready, run 'sudo reboot' to apply all changes"
 echo
-} 2>&1 | sudo tee $BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-setup-log.txt
+} 2>&1 | sudo tee $LOG_FILE

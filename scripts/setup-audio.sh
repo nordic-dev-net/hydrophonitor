@@ -29,5 +29,4 @@ if ! grep -q "$config" /etc/asound.conf; then
   echo "$config" | sudo tee -a /etc/asound.conf
 fi
 
-
 cd $HOME/hydrophonitor/audio-logger && cargo build --release

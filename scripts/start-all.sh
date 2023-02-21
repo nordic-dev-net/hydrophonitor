@@ -4,6 +4,7 @@
 set -x
 
 BOOT_DIR_PATH=/boot/hydrophonitor
+LOG_FILE=$BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-startup-log.txt
 
 {
 SCRIPT_PATH=/home/pi/hydrophonitor/scripts
@@ -20,4 +21,4 @@ mkdir -p "$OUTPUT_DIR"/audio
 sleep 10
 
 (export OUTPUT_DIR=$OUTPUT_DIR; $SCRIPT_PATH/start-audio.sh & $SCRIPT_PATH/start-gps.sh & $SCRIPT_PATH/start-pressure-depth.sh) 2>&1 | tee "$OUTPUT_DIR"/log.txt 
-} 2>&1 | tee $BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-startup-log.txt
+} 2>&1 | tee $LOG_FILE
