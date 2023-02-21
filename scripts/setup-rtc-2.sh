@@ -4,15 +4,19 @@ set -x
 
 echo "Setting up the real time clock module, part 2"
 
-echo ds1307 0x68 | sudo tee /sys/class/i2c-adapter/i2c-1/new_device
+I2C_BUS=1
+
+echo ds1307 0x68 | sudo tee /sys/class/i2c-adapter/i2c-$I2C_BUS/new_device
 
 # Load RTC clock at boot
-sudo sed -i "s/^exit 0$//" /etc/rc.local
-sudo cat << EOF | sudo tee -a /etc/rc.local
-echo ds1307 0x68 | sudo tee /sys/class/i2c-adapter/i2c-1/new_device
+config="echo ds1307 0x68 | sudo tee /sys/class/i2c-adapter/i2c-$I2C_BUS/new_device
 sudo hwclock -s
-exit 0
-EOF
+exit 0"
+
+if ! grep -q "$config" /etc/rc.local; then
+  sudo sed -i "s/^exit 0$//" /etc/rc.local
+  echo "$config" | sudo tee -a /etc/rc.local
+fi
 
 # Set system time to Internet time
 echo "Restarting systmd-timesyncd to update system time"
