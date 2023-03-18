@@ -81,7 +81,21 @@ nmap --version
 
 If this prints out version information about nmap (e.g. Nmap version 7.93 ( https://nmap.org)), it is installed. Otherwise, installation instructions can be found here: https://nmap.org/download.html
 
-After installing, run the following command (it will ask for your user password, write it and press Enter) to find all devices connected to the local network:
+After installing nmap, we first need to determine the subnet in which we will search for the Raspberry Pi IP address. This can be done by first determining our host device's IP address:
+
+```
+ip a | grep 192.168
+```
+
+This should print out something similar to
+```
+❯ ip a | grep 192.168
+    inet 192.168.1.117/24 brd 192.168.1.255 scope global dynamic noprefixroute enp3s0
+```
+
+Here, 192.168.1.117 is our own IP address. From this, we can deduce our subnet by taking the first three parts of the IP address and replacing the last part with zero, and including the subnet mask (24): `192.168.1.0/24`
+
+Then, run the following command (it will ask for your user password, write it and press Enter) to find all devices connected to the local network, and replace `192.168.1.0/24` with the version with your own IP address:
 
 ```
 sudo nmap -sn 192.168.1.0/24

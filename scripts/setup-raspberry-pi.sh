@@ -86,8 +86,8 @@ echo "### Set up a cron job to start the recordings at boot"
 echo
 
 CRON_FILE=/etc/crontab
-CRON_LOG_FILE="$BOOT_DIR_PATH/\$(date +\"%Y-%m-%dT%H-%M-%S\")-cron-log.txt"
-CRON_COMMAND="@reboot root $DIR_PATH/hydrophonitor/scripts/start-all.sh 2>&1 > $CRON_LOG_FILE"
+CRON_LOG_FILE="$BOOT_DIR_PATH/cron-log.txt"
+CRON_COMMAND="@reboot root $DIR_PATH/hydrophonitor/scripts/start-all.sh 2>&1 >> $CRON_LOG_FILE"
 
 # Append command to cron file only if it's not there yet
 if ! grep -q "$CRON_COMMAND" "$CRON_FILE"; then
