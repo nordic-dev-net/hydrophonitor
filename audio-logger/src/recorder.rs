@@ -142,7 +142,8 @@ impl Recorder {
 		self.init_writer()?;
 		let stream = self.create_stream()?;
 		stream.play()?;
-		println!("REC: {}", self.current_file);
+        let date_time = get_date_time_string();
+        println!("REC[{}]: {}", date_time, self.current_file);
 		let now = std::time::Instant::now();
 		while self.interrupt_handles.batch_is_running() {
 			std::thread::sleep(std::time::Duration::from_millis(1));
@@ -155,7 +156,9 @@ impl Recorder {
 		let current_file = self.current_file.clone();
 		std::thread::spawn(move || {
 			writer.lock().unwrap().take().unwrap().finalize().unwrap();
-			println!("STOP: {}", current_file);
+            // Print STOP and the time and date
+            let date_time = get_date_time_string();
+            println!("STOP[{}]: {}", date_time, current_file);
 		});
 		Ok(())
 	}
