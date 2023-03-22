@@ -49,7 +49,10 @@ pub struct Cli {
 fn import_from_sd(sd_card: &mut PathBuf, output_folder: Option<PathBuf>) -> Result<(), Box<dyn Error>>{
     let output_folder = match output_folder {
         Some(output_folder) => output_folder,
-        None => std::env::current_dir().unwrap(),
+        None => std::env::current_dir().unwrap_or_else(|err| {
+            eprintln!("Error: {}", err);
+            std::process::exit(1);
+        })
     };
 
     sd_card.push(DATA_FOLDER);
@@ -82,6 +85,11 @@ pub fn merge_wavs(input: &std::path::PathBuf, output: &std::path::PathBuf) -> Re
 		.filter(|entry| entry.path().extension().unwrap_or_default() == "wav")
 		.collect::<Vec<_>>();
 
+    // If there are no wav files, return
+    if files.is_empty() {
+        println!("No wav files found in {:?}", input);
+        return Ok(());
+    }
 	// Sort files by name
 	files.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
 
@@ -130,10 +138,16 @@ fn main() {
 
             if let Some(output_folder) = &import.output_folder {
                 println!("Output folder: {:?}", output_folder);
-                import_from_sd(&mut import.sd_card, Some(output_folder.clone())).unwrap();
+                import_from_sd(&mut import.sd_card, Some(output_folder.clone())).unwrap_or_else(|err| {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                });
             } else {
                 println!("Output folder: current directory");
-                import_from_sd(&mut import.sd_card, None).unwrap();
+                import_from_sd(&mut import.sd_card, None).unwrap_or_else(|err| {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                });
             }
 
             // Iterate folders inside output folder. Inside each iterated folder there is
@@ -141,17 +155,29 @@ fn main() {
             // wav file and delete the "audio" folder.
             let output_folder = match import.output_folder {
                 Some(output_folder) => output_folder,
-                None => std::env::current_dir().unwrap(),
+                None => std::env::current_dir().unwrap_or_else(|err| {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                })
             };
 
             for entry in WalkDir::new(output_folder.clone()) {
-                let entry = entry.unwrap();
+                let entry = entry.unwrap_or_else(|err| {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                });
                 let path = entry.path();
                 if path.is_dir() {
                     let audio_folder = path.join("audio");
                     if audio_folder.exists() {
-                        merge_wavs(&audio_folder, &PathBuf::from(path)).unwrap();
-                        fs::remove_dir_all(audio_folder).unwrap();
+                        merge_wavs(&audio_folder, &PathBuf::from(path)).unwrap_or_else(|err| {
+                            eprintln!("Error: {}", err);
+                            std::process::exit(1);
+                        });
+                        fs::remove_dir_all(audio_folder).unwrap_or_else(|err| {
+                            eprintln!("Error: {}", err);
+                            std::process::exit(1);
+                        });
                     }
                 }
             }
