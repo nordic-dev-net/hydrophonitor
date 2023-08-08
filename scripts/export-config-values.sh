@@ -3,7 +3,7 @@
 if [ $# -eq 1 ]; then
 	CONFIG_FILE=$1
 else
-	CONFIG_FILE=/boot/hydrophonitor/hydrophonitor-config.txt
+	CONFIG_FILE=/hydrophonitor/hydrophonitor-config.txt
 fi
 
 # Select non-comment lines in CONFIG_FILE, clean horizontal whitespace

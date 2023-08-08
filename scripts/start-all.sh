@@ -3,11 +3,13 @@
 # Print all commands to standard output
 set -x
 
-BOOT_DIR_PATH=/boot/hydrophonitor
-LOG_FILE=$BOOT_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-startup-log.txt
+LOG_DIR_PATH=/hydrophonitor/logs
+LOG_FILE=$LOG_DIR_PATH/$(date +"%Y-%m-%dT%H-%M-%S")-startup-log.txt
+
+mkdir -p $LOG_DIR_PATH
 
 {
-SCRIPT_PATH=/home/pi/hydrophonitor/scripts
+SCRIPT_PATH=/hydrophonitor/scripts
 
 # Export the configuration values
 . $SCRIPT_PATH/export-config-values.sh

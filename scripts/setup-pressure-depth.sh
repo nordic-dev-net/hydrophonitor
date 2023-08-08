@@ -21,4 +21,4 @@ fi
 # Install packages
 sudo apt-get update && sudo apt-get install -y i2c-tools python3-pip
 
-sudo pip install -r $HOME/hydrophonitor/depth-logger/requirements.txt
+sudo pip install -r depth-logger/requirements.txt

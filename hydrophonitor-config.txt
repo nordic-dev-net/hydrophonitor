@@ -1,27 +1,21 @@
-# Audio
-
+## Audio
 SAMPLE_RATE=44100
 CHANNELS=2
 BITRATE=192k
+BATCH_RECORD_LENGTH_SECS=60
 
-# in seconds
-BATCH_RECORD_LENGTH=60
+## GPS
+GPS_INTERVAL_SECS=5
 
-# GPS
+## Depth
+DEPTH_INTERVAL_SECS=5
 
-# in seconds
-GPS_INTERVAL=5
+# Install path that will be created and where the software will be installed
+INSTALL_PATH=/hydrophonitor
 
-# Depth
-
-# in seconds
-DEPTH_INTERVAL=5
-
-# Output location
+# Output location that will be created
+OUTPUT_PATH=/hydrophonitor-data
 
 # TODO
 #TRY_MOUNT_SSD=true
-OUTPUT_PATH=/home/pi/data
 
-HOME_PATH=/home/pi
-DEFAULT_OUTPUT_PATH=/home/pi/recordings

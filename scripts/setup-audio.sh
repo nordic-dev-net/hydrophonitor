@@ -11,7 +11,7 @@ sudo apt-get update && sudo apt-get install -y libasound2-dev libjack-dev
 card_number=$(aplay -l | grep -i usb | grep -i audio | cut -d ' ' -f 2 | cut -d ':' -f 1)
 
 # Change default audio device
-sudo touch /etc/asound.conf
+sudo rm /etc/asound.conf || true
 
 config="pcm.!default {
   type plug
@@ -25,8 +25,4 @@ ctl.!default {
     card $card_number
 }"
 
-if ! grep -q "$config" /etc/asound.conf; then
-  echo "$config" | sudo tee -a /etc/asound.conf
-fi
-
-cd $HOME/hydrophonitor/audio-logger && cargo build --release
+echo "$config" | sudo tee /etc/asound.conf
