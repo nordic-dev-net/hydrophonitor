@@ -8,7 +8,7 @@ mkdir -p ${PACKAGE_DIR}
 
 # Build audio-logger binary and copy to package directory
 
-# Check if Rust toolchain is installed, if not ask if it should be installed
+# Check if Rust toolchain is installed, if not install if --install-rust flag is provided
 if ! command -v rustup &> /dev/null; then
   if [ "$1" = "--install-rust" ]; then
 	sudo apt-get update && sudo apt-get install -y build-essential curl git

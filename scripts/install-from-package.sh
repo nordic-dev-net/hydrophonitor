@@ -20,6 +20,30 @@ echo
 CONFIG_FILE_PATH=$(dirname "$0")/../hydrophonitor-config.txt
 . $(dirname "$0")/export-config-values.sh "$CONFIG_FILE_PATH"
 
+echo "# Variables read from config file:"
+echo "SAMPLE_RATE=$SAMPLE_RATE"
+echo "CHANNELS=$CHANNELS"
+echo "BITRATE=$BITRATE"
+echo "BATCH_RECORD_LENGTH_SECS=$BATCH_RECORD_LENGTH_SECS"
+echo "GPS_INTERVAL_SECS=$GPS_INTERVAL_SECS"
+echo "DEPTH_INTERVAL_SECS=$DEPTH_INTERVAL_SECS"
+echo "INSTALL_PATH=$INSTALL_PATH"
+echo "OUTPUT_PATH=$OUTPUT_PATH"
+echo "USER=$USER"
+echo "PASSWORD=$PASSWORD"
+
+echo
+echo "### Create user"
+echo
+
+echo "$USER:$(openssl passwd -1 $PASSWORD)" | sudo tee /boot/userconf.txt
+
+echo
+echo "### Enable SSH"
+echo
+
+echo "" | sudo tee /boot/ssh.txt
+
 echo
 echo "### Create install directory"
 echo

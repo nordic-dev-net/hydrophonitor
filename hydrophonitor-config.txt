@@ -10,11 +10,15 @@ GPS_INTERVAL_SECS=5
 ## Depth
 DEPTH_INTERVAL_SECS=5
 
-# Install path that will be created and where the software will be installed
+## Install path that will be created and where the software will be installed
 INSTALL_PATH=/hydrophonitor
 
-# Output location that will be created
+## Output location that will be created
 OUTPUT_PATH=/hydrophonitor-data
+
+## User
+USER=pi
+PASSWORD=password
 
 # TODO
 #TRY_MOUNT_SSD=true

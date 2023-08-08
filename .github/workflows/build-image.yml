@@ -1,0 +1,151 @@
+name: Build image
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-package:
+    name: Build package for RPi 4 (64-bit)
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        target: [rpi4]
+        include:
+        - target: rpi4
+          base_image: https://downloads.raspberrypi.org/raspios_lite_arm64_latest
+          cpu: cortex-a53
+          cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Try to cache Cargo dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build package
+        uses: pguyot/arm-runner-action@v2
+        with:
+          image_additional_mb: 4096
+          optimize_image: false
+          base_image: ${{ matrix.base_image }}
+          cpu: ${{ matrix.cpu }}
+          cpu_info: ${{ matrix.cpu_info }}
+          copy_artifact_path: package
+          commands: |
+              ./scripts/build-package.sh --install-rust
+
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: built-package
+          path: package/hydrophonitor.tar.gz
+
+  build-image:
+    name: Build image for RPi 4 (64-bit)
+    needs: build-package
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [rpi4]
+        include:
+        - target: rpi4
+          base_image: https://downloads.raspberrypi.org/raspios_lite_arm64_latest
+          cpu: cortex-a53
+          cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
+    steps:
+      - name: Download built-package
+        uses: actions/download-artifact@v3
+        with:
+          name: built-package
+
+      - name: Install from package
+        id: install_from_package
+        uses: pguyot/arm-runner-action@v2
+        with:
+          image_additional_mb: 4096
+          optimize_image: true
+          base_image: ${{ matrix.base_image }}
+          cpu: ${{ matrix.cpu }}
+          cpu_info: ${{ matrix.cpu_info }}
+          commands: |
+              tar -xvzf hydrophonitor.tar.gz
+              ./scripts/install-from-package.sh
+
+      - name: Define the image name
+        id: image_and_branch_name
+        run: |
+          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
+            echo "LOCAL_BRANCH=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+            echo "RELEASE_NAME=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+            echo "IMAGE_NAME_SUFFIX=${GITHUB_REF/refs\/tags\//}-${{ matrix.target }}" >> $GITHUB_OUTPUT
+            echo "CLONE_RELEASE=yes" >> $GITHUB_OUTPUT
+          elif [ ${GITHUB_REF/refs\/heads\//} != "${GITHUB_REF}" ]; then
+            echo "LOCAL_BRANCH=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_OUTPUT
+            echo "RELEASE_NAME=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_OUTPUT
+            echo "IMAGE_NAME_SUFFIX=${GITHUB_REF/refs\/heads\//}-${{ matrix.target }}" >> $GITHUB_OUTPUT
+            echo "CLONE_RELEASE=yes" >> $GITHUB_OUTPUT
+          else
+            echo "LOCAL_BRANCH=${GITHUB_REF}" >> $GITHUB_OUTPUT
+            echo "IMAGE_NAME_SUFFIX=${GITHUB_REF//\//-}-${{ matrix.target }}" >> $GITHUB_OUTPUT
+            echo "CLONE_RELEASE=no" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Compress the release image
+        run: |
+          mv ${{ steps.install_from_package.outputs.image }} hydrophonitor-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+          sudo xz -T 0 -v hydrophonitor-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img
+
+      - name: Upload the image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: hydrophonitor-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
+          path: hydrophonitor-${{ steps.image_and_branch_name.outputs.IMAGE_NAME_SUFFIX }}.img.xz
+          if-no-files-found: error
+          retention-days: 1
+
+  create-release:
+    name: Create release
+    runs-on: ubuntu-latest
+    needs:
+      - build-image
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Define the release name
+        id: release_name
+        run: |
+          if [ ${GITHUB_REF/refs\/tags\//} != ${GITHUB_REF} ]; then
+             echo "RELEASE_NAME=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+          else
+             echo "RELEASE_NAME=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download the image artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Create release with release image
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: "marvinpinto/action-automatic-releases@v1.2.1"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ steps.release_name.outputs.RELEASE_NAME }}
+          prerelease: true
+          draft: true
+          title: ${{ steps.release_name.outputs.RELEASE_NAME }}
+          files: hydrophonitor-${{ steps.release_name.outputs.RELEASE_NAME }}-*.img.xz/hydrophonitor-${{ steps.release_name.outputs.RELEASE_NAME }}-*.img.xz
