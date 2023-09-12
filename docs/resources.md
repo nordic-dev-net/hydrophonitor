@@ -1,27 +1,37 @@
-# Links
+# Useful resources
 
-# Raspberry Pi GPIO pins pinout
+## Raspberry Pi
+
+### Raspberry Pi GPIO pins pinout
 
 https://pinout.xyz/pinout/i2c
 
-# Setting up an additional i2c bus with the GPIO pins
+### Setting up an additional i2c bus with the GPIO pins
 
 https://raspberrypi.stackexchange.com/questions/101951/using-normal-gpio-pins-as-i2c-required
 
-# Raspberry Pi water pressure sensor
+## Other components
+
+### Depth sensor
+
+#### Example Raspberry Pi water pressure sensor schematic
 
 https://www.circuito.io/app?components=9443,200000,267055
 
-# Setting up Jack on Raspberry Pi
+### RTC
 
-https://wiki.linuxaudio.org/wiki/raspberrypi
-https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md
-https://madskjeldgaard.dk/posts/raspi4-notes/
+#### DS3231 module pinout
 
-# Setting up the RTC
+https://electropeak.com/learn/interfacing-ds3231-real-time-clock-rtc-module-with-arduino/
+
+#### Setting up the RTC
 
 https://pimylifeup.com/raspberry-pi-rtc/
 
-## DS3231 module pinout
+## NixOS on Raspberry Pi
 
-https://electropeak.com/learn/interfacing-ds3231-real-time-clock-rtc-module-with-arduino/
+### Resources that helped with building the current setup
+
+https://myme.no/posts/2022-12-01-nixos-on-raspberrypi.html
+
+https://github.com/lucernae/nixos-pi
