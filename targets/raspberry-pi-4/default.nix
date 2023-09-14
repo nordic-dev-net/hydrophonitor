@@ -41,7 +41,7 @@ in {
     sample-rate = 192000;
     sample-format = "S32_LE";
     channels = 4;
-    max-file-time-secs = 300;
+    max-file-time-secs = 60;
   };
 
   services.gps-recorder = {

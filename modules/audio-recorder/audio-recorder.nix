@@ -41,6 +41,14 @@
   };
 
   config = lib.mkIf config.services.audio-recorder.enable {
+    # Configure the Behringer UMC404HD to turn capture on for all four mics and set the mic volume to max
+    # Sound card idVendor and idProduct fields can be checked from /proc/asound/card1/usbid (when card number is 1, check with arecord -l)
+    services.udev.extraRules = ''
+      # Behringer Uphoria UMC404HD rules
+      # On connect, turn capture on for all mics and set the mic volume to max
+      SUBSYSTEMS=="usb", ATTRS{idVendor}=="1397", ATTRS{idProduct}=="0509", RUN+="${pkgs.writeShellScriptBin "umc404hd-autocapture" (builtins.readFile ./umc404hd-autocapture.sh)}"
+    '';
+
     systemd.services.audio-recorder = {
       description = "Audio Recording Service";
       wantedBy = ["multi-user.target"];
