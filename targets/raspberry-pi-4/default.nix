@@ -47,10 +47,15 @@ in {
 
   services.gps-recorder = {
     enable = true;
-    output-folder = "/output/gps";
+    output-path = "/output/gps";
     interval-secs = 10;
   };
 
+  services.depth-recorder = {
+    enable = true;
+    output-path = "/output/depth";
+    interval-secs = 5;
+  };
 
   # disabled for now, with current config
   # RTC resets after shutdown

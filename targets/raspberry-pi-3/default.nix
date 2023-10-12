@@ -64,7 +64,7 @@ in {
 
   services.gps-recorder = {
     enable = true;
-    output-folder = "/output/gps";
+    output-path = "/output/gps";
     interval-secs = 10;
   };
 
