@@ -13,6 +13,7 @@ in {
 
   boot = {
     # disable internal sound card and vc4 gpu
+    # to set USB sound card as default
     blacklistedKernelModules = ["snd_bcm2835" "vc4"];
     # enable i2c and rtc modules
     kernelModules = ["i2c-dev" "i2c_bcm2708" "rtc_ds1307"];

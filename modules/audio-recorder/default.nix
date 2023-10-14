@@ -72,7 +72,9 @@
         User = "root"; # Replace with appropriate user
         Restart = "always";
       };
-      startLimitIntervalSec = 0;
+      unitConfig = {
+        After = "sound.target";
+      };
     };
   };
 }

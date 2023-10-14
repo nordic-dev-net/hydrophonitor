@@ -9,6 +9,7 @@ in {
   sdImage.compressImage = false;
 
   # disable internal sound card and vc4 gpu
+  # to set USB sound card as default
   boot.blacklistedKernelModules = ["snd_bcm2835" "vc4"];
   # enable i2c and rtc modules
   boot.kernelModules = ["i2c-dev" "i2c_bcm2708" "rtc_ds1307"];
@@ -50,8 +51,11 @@ in {
     interval-secs = 10;
   };
 
+
+  # disabled for now, with current config
+  # RTC resets after shutdown
   services.i2c-rtc-start = {
-    enable = true;
+    enable = false;
     i2c-bus = 1;
   };
 
