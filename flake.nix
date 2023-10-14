@@ -39,7 +39,7 @@
         specialArgs = {inherit pkgs;};
         modules = [
           ./targets/raspberry-pi-4
-          ./modules/audio-recorder.nix
+          ./modules/audio-recorder
           ./modules/real-time-clock/i2c-rtc.nix
           ./modules/shutdown-button/service.nix
           nixos-hardware.nixosModules.raspberry-pi-4
@@ -53,7 +53,7 @@
         specialArgs = {inherit pkgs;};
         modules = [
           ./targets/raspberry-pi-3
-          ./modules/audio-recorder.nix
+          ./modules/audio-recorder
           ./modules/real-time-clock/i2c-rtc.nix
           hydrophonitor-gps.nixosModules.hydrophonitor-gps
           "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
