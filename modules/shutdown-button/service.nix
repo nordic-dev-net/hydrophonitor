@@ -18,7 +18,7 @@ in {
 
       shutdown-press-secs = lib.mkOption {
         type = lib.types.int;
-        default = 1;
+        default = 3;
         description = "How many seconds button must be pushed down to trigger shutdown signal";
       };
     };
@@ -31,13 +31,14 @@ in {
       script = ''
         #!/usr/bin/env bash
         set -x
-        ${shutdownButton}/bin/shutdown-button --gpio-pin ${toString config.services.shutdown-button.gpio-pin} --shutdown-press-secs ${toString config.services.shutdown-button.shutdown-press-secs}
+        RUST_LOG=info ${shutdownButton}/bin/shutdown-button \
+        ${toString config.services.shutdown-button.gpio-pin} \
+        ${toString config.services.shutdown-button.shutdown-press-secs}
       '';
       serviceConfig = {
         User = "root"; # Replace with appropriate user
-        Restart = "always";
+        Restart = "on-failure";
       };
-      startLimitIntervalSec = 0;
     };
   };
 }

@@ -57,7 +57,7 @@ in {
 
   services.shutdown-button = {
     enable = true;
-    gpio-pin = 21; # option not implemented yet
-    shutdown-press-secs = 1; # option not implemented yet
+    gpio-pin = 21;
+    shutdown-press-secs = 3;
   };
 }
