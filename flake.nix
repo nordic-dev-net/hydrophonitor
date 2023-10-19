@@ -9,6 +9,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     deploy-rs.url = "github:serokell/deploy-rs";
     hydrophonitor-gps.url = "github:nordic-dev-net/hydrophonitor-gps";
+    depth-recorder.url = "github:nordic-dev-net/depth-recorder";
   };
   outputs = {
     self,
@@ -17,6 +18,7 @@
     flake-utils,
     deploy-rs,
     hydrophonitor-gps,
+    depth-recorder,
     ...
   }: let
     forEachSystem = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-linux"];
@@ -44,6 +46,7 @@
           ./modules/shutdown-button/service.nix
           nixos-hardware.nixosModules.raspberry-pi-4
           hydrophonitor-gps.nixosModules.hydrophonitor-gps
+          depth-recorder.nixosModules.depth-recorder
           "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
         ];
       };
