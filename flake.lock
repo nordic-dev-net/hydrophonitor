@@ -26,11 +26,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1697648799,
-        "narHash": "sha256-mxdm8vNEwNlolWIjsX60KbljKADh/mKRMq8+SV7+dPs=",
+        "lastModified": 1697704925,
+        "narHash": "sha256-m2i5tydxHAgjs9vqn5tm5MNiPnTLNCDEKrwlF6bbvQE=",
         "owner": "nordic-dev-net",
         "repo": "depth-recorder",
-        "rev": "fabc9ce161b72d8149f3dfc31c6d996ffa972bf5",
+        "rev": "78d26ffe6c6f4d1f3bfffc52d366456bac926ed2",
         "type": "github"
       },
       "original": {
@@ -115,11 +115,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1694708111,
-        "narHash": "sha256-295lPh/11s4hHJsZyF2cXGCPNw1y0dXwq6s0yX9ZtAY=",
+        "lastModified": 1697705076,
+        "narHash": "sha256-NlrHgrZGZbRGKZGytfYBzaW9FsU4N5zofwB5qVXSXXM=",
         "owner": "nordic-dev-net",
         "repo": "hydrophonitor-gps",
-        "rev": "883e15d872d7bb763bbe89862747e26f6b32460e",
+        "rev": "062ac75a39a20ede882f651d551f66581e63a3e0",
         "type": "github"
       },
       "original": {
@@ -182,7 +182,7 @@
         "narHash": "sha256-YyPGNapgZNNj51ylQMw9lAgvxtM2ai1HZVUu3GS8Fng=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f99e5f03cc0aa231ab5950a15ed02afec45ed51a",
+        "rev": "db9208ab987cdeeedf78ad9b4cf3c55f5ebd269b",
         "type": "github"
       },
       "original": {

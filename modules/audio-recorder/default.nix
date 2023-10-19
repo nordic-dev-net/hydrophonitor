@@ -75,6 +75,7 @@
       unitConfig = {
         After = "sound.target";
       };
+      startLimitIntervalSec = 0;
     };
   };
 }
