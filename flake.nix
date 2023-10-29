@@ -42,6 +42,7 @@
         modules = [
           ./targets/raspberry-pi-4
           ./modules/audio-recorder
+          ./modules/logging
           ./modules/real-time-clock/i2c-rtc.nix
           ./modules/shutdown-button/service.nix
           nixos-hardware.nixosModules.raspberry-pi-4

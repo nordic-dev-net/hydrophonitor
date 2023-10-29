@@ -73,7 +73,7 @@
         Restart = "always";
       };
       unitConfig = {
-        After = "sound.target";
+        After = ["multi-user.target"];
       };
       startLimitIntervalSec = 0;
     };

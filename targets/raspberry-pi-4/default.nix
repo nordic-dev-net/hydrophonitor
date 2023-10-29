@@ -45,6 +45,11 @@ in {
     max-file-time-secs = 60;
   };
 
+  services.journalctl-log-export = {
+    enable = true;
+    output-folder = "/output/logs";
+  };
+
   services.gps-recorder = {
     enable = true;
     output-path = "/output/gps";
