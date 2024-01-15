@@ -24,8 +24,10 @@
         User = "root";
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.coreutils}/bin/mkdir -p ${config.services.journalctl-log-export.output-folder}";
-        ExecStop = ''${pkgs.bash}/bin/bash -c "echo 'Exporting logs at shutdown' && journalctl --boot 0 > ${config.services.journalctl-log-export.output-folder}/$(date +\"%Y_%m_%d-%H_%M_%S\")_journalctl_on_shutdown.txt"'';
+        ExecStop = ''${pkgs.bash}/bin/bash -c "echo \"Exporting logs at shutdown" && journalctl --boot 0 > ${config.services.journalctl-log-export.output-folder}/journalctl_on_shutdown.txt"'';
+      };
+      unitConfig = {
+        Before = ["audio-recorder.service"];
       };
     };
 
