@@ -1,0 +1,6 @@
+# Logging setup for hydrophonitor
+
+Everything that is run on hydrophonitor is set up as systemd services. Anything that these services print to standard output or standard error is written to the systemd journal. Therefore, to capture logs from these services as well from other system components, journal from the current boot is exported to `/output/<deployment>/logs` with two systemd services, `journalctl-log-export` and `journalctl-log-export-on-shutdown`. Both a periodically run and on shutdown executed service are defined to ensure that some logs are preserved even if the system is powered off uncleanly and log export on shutdown is not executed.
+
+- `journalctl-log-export.service` is triggered by a systemd timer every five minutes. On first run, the service defines the name for the log file to which logs are periodically exported and exports the journal to the file with journalctl. On subsequent runs, logs are re-exported to the same file.
+- `journalctl-log-export-on-shutdown.service` runs on system shutdown (after audio-recorder service has stopped) and exports the journal to a file that is separate from the periodically updated log file. This should therefore contain logs from the whole boot.
