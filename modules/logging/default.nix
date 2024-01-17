@@ -59,6 +59,9 @@
         OnCalendar = "*:0/5"; # every five minutes
         Unit = "journalctl-log-export.service";
       };
+      unitConfig = {
+        After = ["multi-user.target" "deployment-start.service"];
+      };
     };
   };
 }

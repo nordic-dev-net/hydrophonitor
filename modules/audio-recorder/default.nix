@@ -55,6 +55,7 @@
       script = ''
         #!/usr/bin/env bash
         set -x
+        # DEPLOYMENT_DIRECTORY is set by the deployment-start service
         OUTPUT_PATH=$DEPLOYMENT_DIRECTORY/${config.services.audio-recorder.output-folder}
         ${pkgs.coreutils}/bin/mkdir -p $OUTPUT_PATH
         ${pkgs.alsaUtils}/bin/arecord -l
@@ -74,7 +75,7 @@
         Restart = "always";
       };
       unitConfig = {
-        After = ["multi-user.target"];
+        After = ["multi-user.target" "deployment-start.service"];
       };
       startLimitIntervalSec = 0;
     };
