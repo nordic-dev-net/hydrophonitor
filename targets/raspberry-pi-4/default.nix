@@ -36,9 +36,14 @@ in {
     settings.PasswordAuthentication = true;
   };
 
+  services.deployment-start = {
+    enable = true;
+    output-folder = "/output";
+  };
+
   services.audio-recorder = {
     enable = true;
-    output-folder = "/output/audio";
+    output-folder = "audio";
     sample-rate = 192000;
     sample-format = "S32_LE";
     channels = 4;
@@ -47,7 +52,7 @@ in {
 
   services.journalctl-log-export = {
     enable = true;
-    output-folder = "/output/logs";
+    output-folder = "logs";
   };
 
   services.gps-recorder = {
