@@ -11,7 +11,7 @@
       output-folder = mkOption {
         type = types.str;
         default = "/output";
-        description = "The folder where deployment directory will be created.";
+        description = "Absolute path to folder where deployment directory will be created.";
       };
     };
   };

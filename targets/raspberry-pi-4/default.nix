@@ -57,13 +57,13 @@ in {
 
   services.gps-recorder = {
     enable = true;
-    output-path = "/output/gps";
+    output-folder = "gps";
     interval-secs = 10;
   };
 
   services.depth-recorder = {
     enable = true;
-    output-path = "/output/depth";
+    output-folder = "depth";
     interval-secs = 5;
   };
 
