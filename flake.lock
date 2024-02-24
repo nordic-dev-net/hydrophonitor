@@ -26,11 +26,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1705601300,
+        "lastModified": 1708773379,
         "narHash": "sha256-kNFLbrmw5l5NOO1cQ+yLHQ5rVKYhcDtHqvN3EWgDQAk=",
         "owner": "nordic-dev-net",
         "repo": "depth-recorder",
-        "rev": "44bc429ca446564562862b4b5ef41cbdab0ae0e0",
+        "rev": "336a6794205426bf6529eb429770c075836e1b50",
         "type": "github"
       },
       "original": {
@@ -116,11 +116,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1705601254,
+        "lastModified": 1708773345,
         "narHash": "sha256-/7euqzrdJnyLa69jnPHp96N10LFINZcJkzeOOpedwco=",
         "owner": "nordic-dev-net",
         "repo": "hydrophonitor-gps",
-        "rev": "70de661c0ec43ce95138c09962506f4459a20fc5",
+        "rev": "4b983412a8dadb8e88b01e63e6aaedba813de6e3",
         "type": "github"
       },
       "original": {

@@ -55,7 +55,7 @@ in {
 
   services.audio-recorder = {
     enable = true;
-    output-folder = "/output/audio";
+    output-folder = "audio";
     sample-rate = 192000;
     sample-format = "S32_LE";
     channels = 4;
@@ -64,7 +64,7 @@ in {
 
   services.gps-recorder = {
     enable = true;
-    output-path = "/output/gps";
+    output-folder = "gps";
     interval-secs = 10;
   };
 

@@ -62,7 +62,7 @@ in {
   };
 
   services.depth-recorder = {
-    enable = true;
+    enable = false;
     output-folder = "depth";
     interval-secs = 5;
   };
