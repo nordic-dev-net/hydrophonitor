@@ -38,7 +38,7 @@ in {
 
   services.deployment-start = {
     enable = true;
-    output-folder = "/output";
+    output-path = "/output";
   };
 
   services.audio-recorder = {

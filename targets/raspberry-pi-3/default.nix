@@ -53,6 +53,11 @@ in {
     settings.PasswordAuthentication = true;
   };
 
+  services.deployment-start = {
+    enable = true;
+    output-path = "/output";
+  };
+
   services.audio-recorder = {
     enable = true;
     output-folder = "audio";

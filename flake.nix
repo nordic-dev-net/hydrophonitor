@@ -8,8 +8,8 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils.url = "github:numtide/flake-utils";
     deploy-rs.url = "github:serokell/deploy-rs";
-    hydrophonitor-gps.url = "github:nordic-dev-net/hydrophonitor-gps/4-update-gps-recorder-service-for-deployment-specific-output-directories";
-    depth-recorder.url = "github:nordic-dev-net/depth-recorder/4-update-depth-recorder-service-for-deployment-specific-output-directories";
+    hydrophonitor-gps.url = "github:nordic-dev-net/hydrophonitor-gps";
+    depth-recorder.url = "github:nordic-dev-net/depth-recorder";
   };
   outputs = {
     self,

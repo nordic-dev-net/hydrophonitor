@@ -8,5 +8,4 @@ TARGET_USER="kaskelotti"
 DEFAULT_IP="192.168.1.112"
 TARGET_IP=${1:-${DEFAULT_IP}}
 
-
-(export NIX_SSHOPTS="-tt"; nixos-rebuild switch --flake .#raspberry-pi-4 --target-host ${TARGET_USER}@${TARGET_IP} --use-remote-sudo)
+NIX_SSHOPTS="-o RequestTTY=force" nixos-rebuild switch --flake .#raspberry-pi-4 --target-host ${TARGET_USER}@${TARGET_IP} --use-remote-sudo

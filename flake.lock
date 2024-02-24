@@ -35,7 +35,6 @@
       },
       "original": {
         "owner": "nordic-dev-net",
-        "ref": "4-update-depth-recorder-service-for-deployment-specific-output-directories",
         "repo": "depth-recorder",
         "type": "github"
       }
@@ -125,7 +124,6 @@
       },
       "original": {
         "owner": "nordic-dev-net",
-        "ref": "4-update-gps-recorder-service-for-deployment-specific-output-directories",
         "repo": "hydrophonitor-gps",
         "type": "github"
       }

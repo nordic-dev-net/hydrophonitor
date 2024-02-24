@@ -8,7 +8,7 @@
     services.deployment-start = {
       enable = mkEnableOption "Create deployment directory and export path as environment variable for services to write their output data to.";
 
-      output-folder = mkOption {
+      output-path = mkOption {
         type = types.str;
         default = "/output";
         description = "Absolute path to folder where deployment directory will be created.";
@@ -23,7 +23,7 @@
       script = ''
         #!/usr/bin/env bash
         set -x
-        DEPLOYMENT_DIRECTORY=${config.services.deployment-start.output-folder}/$(${pkgs.coreutils}/bin/date +"%Y-%m-%dT%H_%M_%S%z")
+        DEPLOYMENT_DIRECTORY=${config.services.deployment-start.output-path}/$(${pkgs.coreutils}/bin/date +"%Y-%m-%dT%H_%M_%S%z")
         ${pkgs.systemd}/bin/systemctl set-environment DEPLOYMENT_DIRECTORY=$DEPLOYMENT_DIRECTORY
         ${pkgs.coreutils}/bin/mkdir -p $DEPLOYMENT_DIRECTORY
       '';
