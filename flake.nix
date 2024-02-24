@@ -35,12 +35,13 @@
       ];
     };
   in {
-    systems = {
+    nixosConfigurations = {
       raspberry-pi-4 = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         specialArgs = {inherit pkgs;};
         modules = [
           ./targets/raspberry-pi-4
+          ./modules/deployment-start
           ./modules/audio-recorder
           ./modules/logging
           ./modules/real-time-clock/i2c-rtc.nix
@@ -74,7 +75,7 @@
           magicRollback = false;
           path =
             deploy-rs.lib.aarch64-linux.activate.nixos
-            self.systems.raspberry-pi-4;
+            self.nixosConfigurations.raspberry-pi-4;
           user = "root";
         };
       };
@@ -87,7 +88,7 @@
           magicRollback = false;
           path =
             deploy-rs.lib.aarch64-linux.activate.nixos
-            self.systems.raspberry-pi-3;
+            self.nixosConfigurations.raspberry-pi-3;
           user = "root";
         };
       };

@@ -10,8 +10,8 @@
 
       output-folder = mkOption {
         type = types.str;
-        default = "/output/audio";
-        description = "The folder to save recordings to.";
+        default = "audio";
+        description = "The folder to save recordings to within the deployment folder.";
       };
 
       sample-rate = mkOption {
@@ -55,7 +55,9 @@
       script = ''
         #!/usr/bin/env bash
         set -x
-        ${pkgs.coreutils}/bin/mkdir -p ${config.services.audio-recorder.output-folder}
+        # DEPLOYMENT_DIRECTORY is set by the deployment-start service
+        OUTPUT_PATH=$DEPLOYMENT_DIRECTORY/${config.services.audio-recorder.output-folder}
+        ${pkgs.coreutils}/bin/mkdir -p $OUTPUT_PATH
         ${pkgs.alsaUtils}/bin/arecord -l
         CARD_ID=$(${pkgs.alsaUtils}/bin/arecord -l | grep "USB Audio" | grep -oP '(?<=card )\d')
         DEVICE_ID=$(${pkgs.alsaUtils}/bin/arecord -l | grep "USB Audio" | grep -oP '(?<=device )\d')
@@ -66,14 +68,14 @@
             --rate ${toString config.services.audio-recorder.sample-rate} \
             --channels ${toString config.services.audio-recorder.channels} \
             --use-strftime \
-            ${config.services.audio-recorder.output-folder}/%Y-%m-%d_%H-%M-%S.wav
+            $OUTPUT_PATH/%Y-%m-%dT%H_%M_%S%z.wav
       '';
       serviceConfig = {
         User = "root"; # Replace with appropriate user
         Restart = "always";
       };
       unitConfig = {
-        After = ["multi-user.target"];
+        After = ["multi-user.target" "deployment-start.service"];
       };
       startLimitIntervalSec = 0;
     };
